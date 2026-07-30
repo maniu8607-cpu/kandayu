@@ -1,0 +1,144 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7",
+  "files": [],
+  "subMetas": {
+    "77035": {
+      "importer": "gltf-mesh",
+      "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7@77035",
+      "displayName": "",
+      "id": "77035",
+      "name": "haocongming.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 508
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 16
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e39f7": {
+      "importer": "texture",
+      "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7@e39f7",
+      "displayName": "",
+      "id": "e39f7",
+      "name": "UnnamedTexture.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/Res/Skinned/Char/T_yufu_BC.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "83cd6": {
+      "importer": "gltf-material",
+      "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7@83cd6",
+      "displayName": "",
+      "id": "83cd6",
+      "name": "M_haocongming.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ddefc": {
+      "importer": "gltf-scene",
+      "uuid": "ec7743a0-e6f9-4144-9baf-aca108d06ac7@ddefc",
+      "displayName": "",
+      "id": "ddefc",
+      "name": "大聪明_Skin.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "uri": "db://assets/Res/Skinned/Char/T_yufu_BC.png"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "ec7743a0-e6f9-4144-9baf-aca108d06ac7@77035"
+      ],
+      "skeletons": [
+        "ec7743a0-e6f9-4144-9baf-aca108d06ac7@438fe"
+      ],
+      "textures": [
+        "ec7743a0-e6f9-4144-9baf-aca108d06ac7@e39f7"
+      ],
+      "materials": [
+        "ec7743a0-e6f9-4144-9baf-aca108d06ac7@83cd6"
+      ],
+      "scenes": [
+        "ec7743a0-e6f9-4144-9baf-aca108d06ac7@ddefc"
+      ]
+    }
+  }
+}

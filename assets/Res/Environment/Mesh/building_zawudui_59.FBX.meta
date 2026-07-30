@@ -1,0 +1,146 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b",
+  "files": [],
+  "subMetas": {
+    "a1e0b": {
+      "importer": "gltf-mesh",
+      "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@a1e0b",
+      "displayName": "",
+      "id": "a1e0b",
+      "name": "building_zawudui_59.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 188
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "adacb": {
+      "importer": "gltf-embeded-image",
+      "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@adacb",
+      "displayName": "",
+      "id": "adacb",
+      "name": "file2.image",
+      "userData": {
+        "gltfIndex": 0,
+        "fixAlphaTransparencyArtifacts": true,
+        "hasAlpha": true,
+        "type": "texture"
+      },
+      "ver": "1.0.3",
+      "imported": true,
+      "files": [
+        ".json",
+        ".png"
+      ],
+      "subMetas": {}
+    },
+    "e873a": {
+      "importer": "texture",
+      "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@e873a",
+      "displayName": "",
+      "id": "e873a",
+      "name": "file2.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@adacb"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "aa825": {
+      "importer": "gltf-material",
+      "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@aa825",
+      "displayName": "",
+      "id": "aa825",
+      "name": "lambert4.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5329b": {
+      "importer": "gltf-scene",
+      "uuid": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@5329b",
+      "displayName": "",
+      "id": "5329b",
+      "name": "building_zawudui_59.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "file2",
+        "uri": "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@adacb"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@a1e0b"
+      ],
+      "skeletons": [],
+      "textures": [
+        "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@e873a"
+      ],
+      "materials": [
+        "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@aa825"
+      ],
+      "scenes": [
+        "a4cd3241-2ab6-4f6b-b547-23efe3ba787b@5329b"
+      ]
+    }
+  }
+}

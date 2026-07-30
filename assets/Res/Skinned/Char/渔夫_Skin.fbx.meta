@@ -1,0 +1,144 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d",
+  "files": [],
+  "subMetas": {
+    "4d7a4": {
+      "importer": "gltf-mesh",
+      "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d@4d7a4",
+      "displayName": "",
+      "id": "4d7a4",
+      "name": "yufu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 495
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 16
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e39f7": {
+      "importer": "texture",
+      "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d@e39f7",
+      "displayName": "",
+      "id": "e39f7",
+      "name": "UnnamedTexture.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/Res/Skinned/Char/T_yufu_BC.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f2483": {
+      "importer": "gltf-material",
+      "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d@f2483",
+      "displayName": "",
+      "id": "f2483",
+      "name": "M_yufu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "19c64": {
+      "importer": "gltf-scene",
+      "uuid": "52b557b3-9b03-4dc9-b1b2-519cf854685d@19c64",
+      "displayName": "",
+      "id": "19c64",
+      "name": "渔夫_Skin.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "uri": "db://assets/Res/Skinned/Char/T_yufu_BC.png"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "52b557b3-9b03-4dc9-b1b2-519cf854685d@4d7a4"
+      ],
+      "skeletons": [
+        "52b557b3-9b03-4dc9-b1b2-519cf854685d@438fe"
+      ],
+      "textures": [
+        "52b557b3-9b03-4dc9-b1b2-519cf854685d@e39f7"
+      ],
+      "materials": [
+        "52b557b3-9b03-4dc9-b1b2-519cf854685d@f2483"
+      ],
+      "scenes": [
+        "52b557b3-9b03-4dc9-b1b2-519cf854685d@19c64"
+      ]
+    }
+  }
+}

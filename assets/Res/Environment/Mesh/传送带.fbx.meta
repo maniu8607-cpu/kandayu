@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "2870af90-0a72-48a1-bb79-d04fbf6f491f",
+  "files": [],
+  "subMetas": {
+    "160f3": {
+      "importer": "gltf-mesh",
+      "uuid": "2870af90-0a72-48a1-bb79-d04fbf6f491f@160f3",
+      "displayName": "",
+      "id": "160f3",
+      "name": "chuansongdai.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 382
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "601ef": {
+      "importer": "gltf-material",
+      "uuid": "2870af90-0a72-48a1-bb79-d04fbf6f491f@601ef",
+      "displayName": "",
+      "id": "601ef",
+      "name": "M_chuansongdai.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f2e32": {
+      "importer": "gltf-scene",
+      "uuid": "2870af90-0a72-48a1-bb79-d04fbf6f491f@f2e32",
+      "displayName": "",
+      "id": "f2e32",
+      "name": "传送带.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "2870af90-0a72-48a1-bb79-d04fbf6f491f@160f3"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "2870af90-0a72-48a1-bb79-d04fbf6f491f@601ef"
+      ],
+      "scenes": [
+        "2870af90-0a72-48a1-bb79-d04fbf6f491f@f2e32"
+      ]
+    }
+  }
+}

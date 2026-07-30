@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "8a4d3a1c-9c56-4d1c-a95f-72af38620669",
+  "files": [],
+  "subMetas": {
+    "e3bab": {
+      "importer": "gltf-mesh",
+      "uuid": "8a4d3a1c-9c56-4d1c-a95f-72af38620669@e3bab",
+      "displayName": "",
+      "id": "e3bab",
+      "name": "aniu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 716
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2030f": {
+      "importer": "gltf-material",
+      "uuid": "8a4d3a1c-9c56-4d1c-a95f-72af38620669@2030f",
+      "displayName": "",
+      "id": "2030f",
+      "name": "M_aniu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e47ef": {
+      "importer": "gltf-scene",
+      "uuid": "8a4d3a1c-9c56-4d1c-a95f-72af38620669@e47ef",
+      "displayName": "",
+      "id": "e47ef",
+      "name": "顾客.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "8a4d3a1c-9c56-4d1c-a95f-72af38620669@e3bab"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "8a4d3a1c-9c56-4d1c-a95f-72af38620669@2030f"
+      ],
+      "scenes": [
+        "8a4d3a1c-9c56-4d1c-a95f-72af38620669@e47ef"
+      ]
+    }
+  }
+}

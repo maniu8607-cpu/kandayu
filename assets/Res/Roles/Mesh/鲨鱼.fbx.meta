@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "70517362-fa71-4545-b671-30da809f8d07",
+  "files": [],
+  "subMetas": {
+    "5915e": {
+      "importer": "gltf-mesh",
+      "uuid": "70517362-fa71-4545-b671-30da809f8d07@5915e",
+      "displayName": "",
+      "id": "5915e",
+      "name": "shayu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 420
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "691fe": {
+      "importer": "gltf-material",
+      "uuid": "70517362-fa71-4545-b671-30da809f8d07@691fe",
+      "displayName": "",
+      "id": "691fe",
+      "name": "M_shayu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b0431": {
+      "importer": "gltf-scene",
+      "uuid": "70517362-fa71-4545-b671-30da809f8d07@b0431",
+      "displayName": "",
+      "id": "b0431",
+      "name": "鲨鱼.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "70517362-fa71-4545-b671-30da809f8d07@5915e"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "70517362-fa71-4545-b671-30da809f8d07@691fe"
+      ],
+      "scenes": [
+        "70517362-fa71-4545-b671-30da809f8d07@b0431"
+      ]
+    }
+  }
+}

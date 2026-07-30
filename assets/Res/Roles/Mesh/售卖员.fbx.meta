@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "67cbbc16-853d-4803-b4d0-eee89ada6dbc",
+  "files": [],
+  "subMetas": {
+    "77035": {
+      "importer": "gltf-mesh",
+      "uuid": "67cbbc16-853d-4803-b4d0-eee89ada6dbc@77035",
+      "displayName": "",
+      "id": "77035",
+      "name": "haocongming.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 508
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "83cd6": {
+      "importer": "gltf-material",
+      "uuid": "67cbbc16-853d-4803-b4d0-eee89ada6dbc@83cd6",
+      "displayName": "",
+      "id": "83cd6",
+      "name": "M_haocongming.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "25fd0": {
+      "importer": "gltf-scene",
+      "uuid": "67cbbc16-853d-4803-b4d0-eee89ada6dbc@25fd0",
+      "displayName": "",
+      "id": "25fd0",
+      "name": "售卖员.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "67cbbc16-853d-4803-b4d0-eee89ada6dbc@77035"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "67cbbc16-853d-4803-b4d0-eee89ada6dbc@83cd6"
+      ],
+      "scenes": [
+        "67cbbc16-853d-4803-b4d0-eee89ada6dbc@25fd0"
+      ]
+    }
+  }
+}

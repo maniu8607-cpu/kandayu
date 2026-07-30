@@ -1,0 +1,108 @@
+{
+  "__type__": "cc.Material",
+  "_name": "",
+  "_objFlags": 0,
+  "__editorExtras__": {},
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "687a6ad5-6c4d-4009-beb4-efd055be6aba",
+    "__expectedType__": "cc.EffectAsset"
+  },
+  "_techIdx": 0,
+  "_defines": [
+    {}
+  ],
+  "_states": [
+    {
+      "priority": 200,
+      "rasterizerState": {
+        "polygonMode": 2
+      },
+      "depthStencilState": {},
+      "blendState": {
+        "targets": [
+          {}
+        ]
+      }
+    }
+  ],
+  "_props": [
+    {
+      "mainTexture": {
+        "__uuid__": "0b38310b-0cd3-45e4-958a-82eef5469c2a@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "mainTiling_Offset": {
+        "__type__": "cc.Vec4",
+        "x": 1,
+        "y": 1.5,
+        "z": 0,
+        "w": -0.7
+      },
+      "tintColor": {
+        "__type__": "cc.Color",
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 255
+      },
+      "maskTexture": {
+        "__uuid__": "9936b802-479a-4c8d-9427-349c0866fd18@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "_u": -0.1,
+      "_NoiseTex": {
+        "__uuid__": "451ba409-c749-42b6-bd5d-0fa968146c6f@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "_NoiseTiling_Offset": {
+        "__type__": "cc.Vec4",
+        "x": 1,
+        "y": 1.4,
+        "z": 0,
+        "w": 0
+      },
+      "_NoiseIntensity": 0.04,
+      "_NoiseTex_PannerSpeedUV": {
+        "__type__": "cc.Vec2",
+        "x": 0.2,
+        "y": -0.5
+      },
+      "_FresnelColor": {
+        "__type__": "cc.Color",
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 252
+      },
+      "_FresnelScale": 0,
+      "_FresnelPower": 0,
+      "_DissovleTex": {
+        "__uuid__": "749234d2-f55c-4268-b73d-db0bd748ab8e@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "_DissovleTiling_Offset": {
+        "__type__": "cc.Vec4",
+        "x": 2,
+        "y": 1.4,
+        "z": 0,
+        "w": 0
+      },
+      "_Dissolve_Bias": -0.7,
+      "_DissolveTex_PannerSpeedUV": {
+        "__type__": "cc.Vec2",
+        "x": -0.3,
+        "y": 0.2
+      },
+      "_Dissolve_color": {
+        "__type__": "cc.Color",
+        "r": 0,
+        "g": 255,
+        "b": 0,
+        "a": 255
+      },
+      "_OutlineGlow": 0.648,
+      "_OutlineIntensity": 0.068
+    }
+  ]
+}

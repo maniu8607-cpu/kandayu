@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1",
+  "files": [],
+  "subMetas": {
+    "c0e09": {
+      "importer": "gltf-mesh",
+      "uuid": "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@c0e09",
+      "displayName": "",
+      "id": "c0e09",
+      "name": "jixie.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 712
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bde06": {
+      "importer": "gltf-material",
+      "uuid": "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@bde06",
+      "displayName": "",
+      "id": "bde06",
+      "name": "M_jixie.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3cd05": {
+      "importer": "gltf-scene",
+      "uuid": "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@3cd05",
+      "displayName": "",
+      "id": "3cd05",
+      "name": "切肉机.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@c0e09"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@bde06"
+      ],
+      "scenes": [
+        "7c8e271c-b39c-4e1d-b214-8c8f7e2ec6d1@3cd05"
+      ]
+    }
+  }
+}

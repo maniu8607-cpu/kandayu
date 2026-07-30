@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "8f4aa156-3546-43d5-8a54-3f5de823a997",
+  "files": [],
+  "subMetas": {
+    "82734": {
+      "importer": "gltf-mesh",
+      "uuid": "8f4aa156-3546-43d5-8a54-3f5de823a997@82734",
+      "displayName": "",
+      "id": "82734",
+      "name": "dengyu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 448
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "93355": {
+      "importer": "gltf-scene",
+      "uuid": "8f4aa156-3546-43d5-8a54-3f5de823a997@93355",
+      "displayName": "",
+      "id": "93355",
+      "name": "灯笼鱼.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "95eb7": {
+      "importer": "gltf-material",
+      "uuid": "8f4aa156-3546-43d5-8a54-3f5de823a997@95eb7",
+      "displayName": "",
+      "id": "95eb7",
+      "name": "M_dengyu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "8f4aa156-3546-43d5-8a54-3f5de823a997@82734"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "8f4aa156-3546-43d5-8a54-3f5de823a997@95eb7"
+      ],
+      "scenes": [
+        "8f4aa156-3546-43d5-8a54-3f5de823a997@93355"
+      ]
+    }
+  }
+}

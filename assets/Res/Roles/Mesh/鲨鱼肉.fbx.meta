@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "146608dd-3ce4-4a9a-af82-53224854e55a",
+  "files": [],
+  "subMetas": {
+    "d5318": {
+      "importer": "gltf-mesh",
+      "uuid": "146608dd-3ce4-4a9a-af82-53224854e55a@d5318",
+      "displayName": "",
+      "id": "d5318",
+      "name": "shayurou.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 76
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "4ad15": {
+      "importer": "gltf-material",
+      "uuid": "146608dd-3ce4-4a9a-af82-53224854e55a@4ad15",
+      "displayName": "",
+      "id": "4ad15",
+      "name": "M_shayurou.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9109": {
+      "importer": "gltf-scene",
+      "uuid": "146608dd-3ce4-4a9a-af82-53224854e55a@f9109",
+      "displayName": "",
+      "id": "f9109",
+      "name": "鲨鱼肉.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "146608dd-3ce4-4a9a-af82-53224854e55a@d5318"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "146608dd-3ce4-4a9a-af82-53224854e55a@4ad15"
+      ],
+      "scenes": [
+        "146608dd-3ce4-4a9a-af82-53224854e55a@f9109"
+      ]
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "__type__": "cc.Material",
+  "_name": "",
+  "_objFlags": 0,
+  "__editorExtras__": {},
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "17fdda40-31c1-48b5-9234-fb9ca69e6497",
+    "__expectedType__": "cc.EffectAsset"
+  },
+  "_techIdx": 0,
+  "_defines": [
+    {
+      "USE_DISSOVLE": true
+    }
+  ],
+  "_states": [
+    {
+      "rasterizerState": {},
+      "depthStencilState": {},
+      "blendState": {
+        "targets": [
+          {}
+        ]
+      }
+    }
+  ],
+  "_props": [
+    {
+      "mainTexture": {
+        "__uuid__": "a0709338-1370-4d4c-adf4-42ada5132ba4@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "tintColor": {
+        "__type__": "cc.Color",
+        "r": 150,
+        "g": 150,
+        "b": 150,
+        "a": 85
+      },
+      "_NoiseTex": {
+        "__uuid__": "a5da7aec-67ea-4e34-b8c6-03434da75199@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "_NoiseTiling_Offset": {
+        "__type__": "cc.Vec4",
+        "x": 2,
+        "y": 2,
+        "z": 0,
+        "w": 0
+      },
+      "_NoiseIntensity": 0.01,
+      "_NoiseTex_PannerSpeedUV": {
+        "__type__": "cc.Vec2",
+        "x": 0.1,
+        "y": 0.1
+      },
+      "_DissovleTex": {
+        "__uuid__": "7cce68a1-2c7f-408b-9a69-2edff113c021@6c48a",
+        "__expectedType__": "cc.Texture2D"
+      },
+      "_DissovleTiling_Offset": {
+        "__type__": "cc.Vec4",
+        "x": 0.5,
+        "y": 0.6,
+        "z": 1.5,
+        "w": 0
+      },
+      "_Dissolve_Bias": 1.041,
+      "_Dissolve_Speed": 0.077,
+      "_DissolveTex_PannerSpeedUV": {
+        "__type__": "cc.Vec2",
+        "x": 0,
+        "y": -0.3
+      },
+      "_Dissolve_color": {
+        "__type__": "cc.Color",
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 255
+      },
+      "_OutlineGlow": 0,
+      "_OutlineIntensity": 0
+    }
+  ]
+}

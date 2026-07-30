@@ -1,0 +1,264 @@
+CCEffect %{
+  temporaries:
+    b1: &b1
+      targets:
+      - blend: true
+        blendSrc: src_alpha
+        blendDst: one
+        blendSrcAlpha: src_alpha
+        blendDstAlpha: one
+    b2: &b2
+      targets:
+      - blend: true
+        blendSrc: one
+        blendDst: one_minus_src_alpha
+        blendSrcAlpha: one
+        blendDstAlpha: one_minus_src_alpha
+    b3: &b3
+      targets:
+      - blend: true
+        blendSrc: src_alpha
+        blendDst: one_minus_src_alpha
+        blendSrcAlpha: src_alpha
+        blendDstAlpha: one_minus_src_alpha
+    d1: &d1 { depthTest: true, depthWrite: false }
+    r1: &r1 { cullMode: none }
+    p1: &p1
+      mainTexture:            { value: grey }
+      mainTiling_Offset:      { value: [1, 1, 0, 0]  }
+      frameTile_velLenScale:  { value: [1, 1, 0, 0]  }
+    p2: &p2
+      <<: *p1
+      tintColor:              { value: [0.5, 0.5, 0.5, 0.5], editor: { type: color } }
+
+      # smz: properties
+      maskTexture:            { value: grey }
+      maskTiling_Offset:      { value: [1, 1, 0, 0]  }
+      _u:              { value: 1.0 }
+      _v:              { value: 0.0 }
+      _uMask:          { value: 0.0 }
+      _vMask:          { value: 0.0 }
+      _intensity:      { value: 1.0 }
+
+      _NoiseTex:              { value: grey }
+      _NoiseTiling_Offset:      { value: [1, 1, 0, 0]  }
+      _NoiseIntensity:        { value: 0.0 }
+      _NoiseTex_PannerSpeedUV: { value: [0.0, 0.0] }
+
+      _DissovleTex:                 { value: grey}
+      _DissovleTiling_Offset:       { value: [1, 1, 0, 0]  }
+      _Dissolve_Bias:               { value: 0.0, editor: { slide: true, range: [-5.0, 5.0], step: 0.001} }
+      _Dissolve_Speed:              { value: 1.0, editor: { slide: true, range: [-5.0, 5.0], step: 0.001} }
+      _DissolveTex_PannerSpeedUV:   { value: [0.0, 0.0] }
+      _Dissolve_color:              { value: [0.5, 0.5, 0.5, 1.0], editor: { type: color } }
+      _OutlineGlow:                 { value: 2.0, editor: { slide: true, range: [0, 5.0], step: 0.001}}
+      _OutlineIntensity:            { value: 0.92, editor: { slide: true, range: [0, 1.0], step: 0.001}}
+      # -----------------
+
+  techniques:
+  - name: opaque
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      properties: *p2
+  - name: add
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b1
+      properties: *p2
+  - name: alpha-blend
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b3
+      properties: *p2
+  - name: add-multiply
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: tinted-fs:multiply
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      properties: *p2
+  - name: add-smooth
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: no-tint-fs:addSmooth
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      properties: *p1
+  - name: premultiply-blend
+    passes:
+    - vert: chuk-particle-trail:vs_main
+      frag: no-tint-fs:premultiplied
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      properties: *p1
+}%
+
+// TODO: soft particle
+
+CCProgram tinted-fs %{
+  precision mediump float;
+  #include <legacy/output>
+
+  in vec2 uv;
+  in vec4 color;
+  #if CC_DRAW_WIRE_FRAME
+    in vec3 vBarycentric;
+  #endif
+
+  uniform sampler2D mainTexture;
+  uniform FragConstants {
+    vec4 tintColor;
+  };
+
+  // smz: properties
+  #if USE_UVOFFSET
+    in vec2 uvmask;
+    uniform sampler2D maskTexture;
+    uniform UVoffset{
+      lowp float _u;
+      lowp float _v;
+      lowp float _uMask;
+      lowp float _vMask;
+      lowp float _intensity;
+    };
+  #endif
+
+  #if USE_NOISE
+  uniform sampler2D _NoiseTex;
+  uniform Noise{
+    vec4 _NoiseTiling_Offset;
+    vec2 _NoiseTex_PannerSpeedUV;
+    float _NoiseIntensity;
+  };
+  #endif
+
+  #if USE_DISSOVLE
+    uniform sampler2D _DissovleTex;
+    uniform Dissovle{
+      vec4 _Dissolve_color;
+      vec4 _DissovleTiling_Offset;
+      vec2 _DissolveTex_PannerSpeedUV;
+      float _Dissolve_Bias;
+      float _Dissolve_Speed;
+      float _OutlineGlow;
+      float _OutlineIntensity;
+    };
+  #endif
+  // ---------------------
+
+  vec4 add () {
+    vec4 col;
+
+    // smz: prepare
+    vec2 pixuv = uv;
+    float run_time = cc_time.x;
+    vec4 mColor = color;
+    #if NO_AFFECT_ALPHA
+      mColor.a = 1.0;
+    #endif
+    // -------------
+
+    #if CC_DRAW_WIRE_FRAME
+      if (any(lessThan(vBarycentric, vec3(0.02)))) {
+        col = vec4(0., 1., 1., 1.);
+      }
+    #endif
+
+    // smz: effects
+    #if USE_NOISE
+      vec2 noiseuv = (pixuv * _NoiseTiling_Offset.xy + _NoiseTiling_Offset.zw) + fract(vec2(run_time) * _NoiseTex_PannerSpeedUV);
+      float noisecolor = texture(_NoiseTex, noiseuv).r;
+      pixuv += (noisecolor * 2.0 - 1.0) * _NoiseIntensity;
+    #endif
+
+    #if USE_UVOFFSET
+      vec2 uv_0 = (pixuv + vec2((_u * run_time),_v * run_time));
+      vec4 mainColor = texture(mainTexture, uv_0);
+
+      vec2 uv_1 = (uvmask + vec2((_uMask * run_time),(_vMask * run_time)));
+      vec4 maskColor = texture(maskTexture, uv_1);
+
+      if(maskColor.a < mainColor.a)
+      {
+        mainColor.a = maskColor.a;
+      }
+
+      col = mColor * tintColor * mainColor;
+      col.rgb *= vec3(2.0) * vec3(_intensity);
+    #else
+      col = 2.0 * mColor * tintColor * texture(mainTexture, pixuv);
+    #endif
+
+    #if USE_DISSOVLE
+      float dissolveAmount = (_Dissolve_Bias + 1.0 - color.w) * _Dissolve_Speed;
+
+      vec2 dissovleUV = pixuv * _DissovleTiling_Offset.xy + _DissovleTiling_Offset.zw + fract(vec2(run_time) * _DissolveTex_PannerSpeedUV);
+      vec4 dissovleSampler = texture(_DissovleTex,dissovleUV);
+      float OutlineIntensity = _OutlineIntensity * 0.5;
+
+      float DissovleMask = smoothstep(0.0 + OutlineIntensity,1.0 - OutlineIntensity,dissovleSampler.r - dissolveAmount);
+
+      // vec3 EdgeColor = smoothstep(0.1, 0.0, abs(DissovleMask - 0.5)) * _OutlineGlow * _Dissolve_color.rgb;
+      col.rgb = mix(mix(col.rgb, _OutlineGlow * _Dissolve_color.rgb, _Dissolve_color.a), col.rgb, DissovleMask);
+      col.a = min(col.a, DissovleMask);
+    #endif
+    // --------------
+
+    return CCFragOutput(col);
+  }
+
+  vec4 opaque () {
+    vec4 col = 2.0 * color * tintColor * texture(mainTexture, uv);
+    #if CC_DRAW_WIRE_FRAME
+      if (any(lessThan(vBarycentric, vec3(0.02)))) {
+        col = vec4(0., 1., 1., 1.);
+      }
+    #endif
+    return CCFragOutput(col);
+  }
+
+  vec4 multiply () {
+    vec4 col;
+    vec4 texColor = texture(mainTexture, uv);
+    col.rgb = tintColor.rgb * texColor.rgb * color.rgb * vec3(2.0);
+    col.a = (1.0 - texColor.a) * (tintColor.a * color.a * 2.0);
+    #if CC_DRAW_WIRE_FRAME
+      if (any(lessThan(vBarycentric, vec3(0.02)))) {
+        col = vec4(0., 1., 1., col.a);
+      }
+    #endif
+    return CCFragOutput(col);
+  }
+}%
+
+CCProgram no-tint-fs %{
+  precision mediump float;
+  #include <legacy/output>
+
+  in vec2 uv;
+  in vec4 color;
+
+  uniform sampler2D mainTexture;
+
+  vec4 addSmooth () {
+    vec4 col = color * texture(mainTexture, uv);
+    col.rgb *= col.a;
+    return CCFragOutput(col);
+  }
+
+  vec4 premultiplied () {
+    vec4 col = color * texture(mainTexture, uv) * color.a;
+    return CCFragOutput(col);
+  }
+}%

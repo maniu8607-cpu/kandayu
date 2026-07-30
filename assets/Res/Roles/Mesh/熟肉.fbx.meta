@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "56d423fb-cfce-4caa-ba4d-050717c6f7e9",
+  "files": [],
+  "subMetas": {
+    "43026": {
+      "importer": "gltf-mesh",
+      "uuid": "56d423fb-cfce-4caa-ba4d-050717c6f7e9@43026",
+      "displayName": "",
+      "id": "43026",
+      "name": "shurou.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 54
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "70842": {
+      "importer": "gltf-scene",
+      "uuid": "56d423fb-cfce-4caa-ba4d-050717c6f7e9@70842",
+      "displayName": "",
+      "id": "70842",
+      "name": "熟肉.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0dfbf": {
+      "importer": "gltf-material",
+      "uuid": "56d423fb-cfce-4caa-ba4d-050717c6f7e9@0dfbf",
+      "displayName": "",
+      "id": "0dfbf",
+      "name": "M_shourou.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "56d423fb-cfce-4caa-ba4d-050717c6f7e9@43026"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "56d423fb-cfce-4caa-ba4d-050717c6f7e9@0dfbf"
+      ],
+      "scenes": [
+        "56d423fb-cfce-4caa-ba4d-050717c6f7e9@70842"
+      ]
+    }
+  }
+}

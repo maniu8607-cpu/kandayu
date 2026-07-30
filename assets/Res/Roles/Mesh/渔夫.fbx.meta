@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "2eaf7470-d937-42b9-b514-bd06432008c7",
+  "files": [],
+  "subMetas": {
+    "4d7a4": {
+      "importer": "gltf-mesh",
+      "uuid": "2eaf7470-d937-42b9-b514-bd06432008c7@4d7a4",
+      "displayName": "",
+      "id": "4d7a4",
+      "name": "yufu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 495
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f2483": {
+      "importer": "gltf-material",
+      "uuid": "2eaf7470-d937-42b9-b514-bd06432008c7@f2483",
+      "displayName": "",
+      "id": "f2483",
+      "name": "M_yufu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7205c": {
+      "importer": "gltf-scene",
+      "uuid": "2eaf7470-d937-42b9-b514-bd06432008c7@7205c",
+      "displayName": "",
+      "id": "7205c",
+      "name": "渔夫.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "2eaf7470-d937-42b9-b514-bd06432008c7@4d7a4"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "2eaf7470-d937-42b9-b514-bd06432008c7@f2483"
+      ],
+      "scenes": [
+        "2eaf7470-d937-42b9-b514-bd06432008c7@7205c"
+      ]
+    }
+  }
+}

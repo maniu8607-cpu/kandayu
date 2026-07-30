@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "3c495d19-0de8-4a4a-b776-399bbfeccf3a",
+  "files": [],
+  "subMetas": {
+    "97632": {
+      "importer": "gltf-scene",
+      "uuid": "3c495d19-0de8-4a4a-b776-399bbfeccf3a@97632",
+      "displayName": "",
+      "id": "97632",
+      "name": "鳄鱼.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a2b6f": {
+      "importer": "gltf-mesh",
+      "uuid": "3c495d19-0de8-4a4a-b776-399bbfeccf3a@a2b6f",
+      "displayName": "",
+      "id": "a2b6f",
+      "name": "eyu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 470
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5c0a4": {
+      "importer": "gltf-material",
+      "uuid": "3c495d19-0de8-4a4a-b776-399bbfeccf3a@5c0a4",
+      "displayName": "",
+      "id": "5c0a4",
+      "name": "M_eyu.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "3c495d19-0de8-4a4a-b776-399bbfeccf3a@a2b6f"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "3c495d19-0de8-4a4a-b776-399bbfeccf3a@5c0a4"
+      ],
+      "scenes": [
+        "3c495d19-0de8-4a4a-b776-399bbfeccf3a@97632"
+      ]
+    }
+  }
+}

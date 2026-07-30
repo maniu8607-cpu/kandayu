@@ -1,0 +1,145 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "a587e045-67cd-4435-914d-eef936bef896",
+  "files": [],
+  "subMetas": {
+    "a2b6f": {
+      "importer": "gltf-mesh",
+      "uuid": "a587e045-67cd-4435-914d-eef936bef896@a2b6f",
+      "displayName": "",
+      "id": "a2b6f",
+      "name": "eyu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 470
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "a587e045-67cd-4435-914d-eef936bef896@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 5
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5b30f": {
+      "importer": "texture",
+      "uuid": "a587e045-67cd-4435-914d-eef936bef896@5b30f",
+      "displayName": "",
+      "id": "5b30f",
+      "name": "Map #23.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/Res/Skinned/Fish/T_yu_BC.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "929f8": {
+      "importer": "gltf-material",
+      "uuid": "a587e045-67cd-4435-914d-eef936bef896@929f8",
+      "displayName": "",
+      "id": "929f8",
+      "name": "YU.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a15b1": {
+      "importer": "gltf-scene",
+      "uuid": "a587e045-67cd-4435-914d-eef936bef896@a15b1",
+      "displayName": "",
+      "id": "a15b1",
+      "name": "EYu_Skin.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "Map #23",
+        "uri": "db://assets/Res/Skinned/Fish/T_yu_BC.png"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "a587e045-67cd-4435-914d-eef936bef896@a2b6f"
+      ],
+      "skeletons": [
+        "a587e045-67cd-4435-914d-eef936bef896@438fe"
+      ],
+      "textures": [
+        "a587e045-67cd-4435-914d-eef936bef896@5b30f"
+      ],
+      "materials": [
+        "a587e045-67cd-4435-914d-eef936bef896@929f8"
+      ],
+      "scenes": [
+        "a587e045-67cd-4435-914d-eef936bef896@a15b1"
+      ]
+    }
+  }
+}

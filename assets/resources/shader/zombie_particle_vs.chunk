@@ -1,0 +1,140 @@
+
+precision highp float;
+#include <common/math/transform>
+#include <zombie_particle_common>
+#include <builtin/uniforms/cc-local>
+
+#define PI 3.1415926
+
+vec4 lpvs_main () {
+  vec3 compScale = scale.xyz * a_texCoord1;
+  #if !CC_INSTANCE_PARTICLE
+    vec4 pos = vec4(a_position.xyz, 1);
+  #endif
+  #if CC_INSTANCE_PARTICLE
+    vec4 pos = vec4(a_texCoord4.xyz, 1);
+  #endif
+  #if CC_RENDER_MODE == RENDER_MODE_STRETCHED_BILLBOARD
+    vec4 velocity = vec4(a_color1.xyz, 0);
+  #endif
+
+  #if !CC_USE_WORLD_SPACE
+    // simulate in world space. apply cc_matWorld matrix on CPU side.
+    pos = cc_matWorld * pos;
+    #if CC_RENDER_MODE == RENDER_MODE_STRETCHED_BILLBOARD
+      velocity = cc_matWorld * velocity;
+    #endif
+  #endif
+
+  #pragma define INDENTIFY_NEG_QUAT 10.0
+
+  #if ROTATION_OVER_TIME_MODULE_ENABLE
+    vec3 rotTmp = a_texCoord2;
+    float mulFactor = 1.0;
+    if (rotTmp.x > INDENTIFY_NEG_QUAT * 0.5) {
+        rotTmp.x -= INDENTIFY_NEG_QUAT;
+        mulFactor = -1.0;
+    }
+    vec4 rot = vec4(rotTmp, 0.0);
+    rot.w = mulFactor * sqrt(abs(1.0 - rot.x * rot.x - rot.y * rot.y - rot.z * rot.z));
+  #endif
+  #if !ROTATION_OVER_TIME_MODULE_ENABLE
+    #if CC_RENDER_MODE != RENDER_MODE_MESH
+      #if CC_RENDER_MODE == RENDER_MODE_BILLBOARD
+        vec3 rotEuler = a_texCoord2;
+      #elif CC_RENDER_MODE == RENDER_MODE_STRETCHED_BILLBOARD
+        vec3 rotEuler = vec3(0.);
+      #endif
+      #if CC_RENDER_MODE != RENDER_MODE_BILLBOARD && CC_RENDER_MODE != RENDER_MODE_STRETCHED_BILLBOARD
+        vec3 rotEuler = vec3(0., 0., a_texCoord2.z);
+      #endif
+      vec4 rot = quaternionFromEuler(rotEuler);
+    #endif
+    #if CC_RENDER_MODE == RENDER_MODE_MESH
+      vec4 rot = quaternionFromEuler(a_texCoord2);
+    #endif
+  #endif
+
+  #if CC_RENDER_MODE != RENDER_MODE_MESH
+    vec2 cornerOffset = vec2((a_texCoord.xy - 0.5));
+
+    #if CC_RENDER_MODE == RENDER_MODE_BILLBOARD || CC_RENDER_MODE == RENDER_MODE_VERTICAL_BILLBOARD
+      computeVertPos(pos, cornerOffset, rot, compScale, cc_matViewInv);
+    #elif CC_RENDER_MODE == RENDER_MODE_STRETCHED_BILLBOARD
+      computeVertPos(pos, cornerOffset, rot, compScale, cc_cameraPos.xyz, velocity, frameTile_velLenScale.z, frameTile_velLenScale.w, a_texCoord.x);
+    #elif RENDER_MODE_HORIZONTAL_BILLBOARD
+      computeVertPos(pos, cornerOffset, rot, compScale);
+    #endif
+
+    color = a_color;
+  #endif
+  #if CC_RENDER_MODE == RENDER_MODE_MESH
+    mat3 rotMat = quatToMat3(rot);
+    mat3 nodeMat = quatToMat3(nodeRotation);
+    rotMat = nodeMat * rotMat;
+    rot = mat3ToQuat(rotMat);
+
+    mat4 xformNoScale = matrixFromRT(rot, pos.xyz);
+    mat4 xform = matFromRTS(rot, pos.xyz, compScale);
+    pos = xform * vec4(a_texCoord3, 1);
+    vec4 normal = xformNoScale * vec4(a_normal, 0);
+
+    v_worldPos = pos.xyz;
+    v_worldNormal = normal.xyz;
+
+    color = a_color * a_color1;
+  #endif
+
+  v_maskUV = a_texCoord.xy;
+  #if ENABLE_MASK
+    #if FLOW_ON
+      v_maskUV += cc_time.x * _MaskTexPannerSpeed;
+    #endif
+
+    v_maskUV = transformUV(v_maskUV, _MaskTillingOffset, 0.0);
+  #endif
+
+  v_noiseUV = a_texCoord.xy;
+  #if ENABLE_NOISE
+    #if FLOW_ON
+      v_noiseUV += cc_time.x * _NoiseTexPannerSpeed;
+    #endif
+
+    v_noiseUV = transformUV(v_noiseUV, _NoiseTillingOffset, 0.0);
+  #endif
+
+  v_dissolveUV = a_texCoord.xy;
+  v_uv3 = a_texCoord.xy;
+  #if ENABLE_DISSOLVE
+    #if FLOW_ON
+      v_dissolveUV += cc_time.x * _DissolveTexPannerSpeed;
+    #endif
+
+    v_dissolveUV = transformUV(v_dissolveUV, _DissolveTillingOffset, 0.0);
+    v_uv3 = transformUV(v_uv3, _DirectTillingOffset, 0.0);
+
+    float dirTexRad = _DirectTexAngle / 360.0 * 2.0 * PI;
+    v_sincosDirectTex = vec2(cos(dirTexRad), sin(dirTexRad));
+  #endif
+
+  uv = a_texCoord.xy;
+  #if FLOW_ON
+    uv += cc_time.x * _MainTexPannerSpeed;
+  #endif
+  uv = transformUV(uv, mainTiling_Offset, _CurveU);
+
+  #if ROTATE_ON
+    float mainRotateRad = (_MainRotateAngle / 360.0) * 2.0 * PI;
+
+    float maskRotateRad = 0.0;
+    #if ENABLE_MASK
+      maskRotateRad = (_MaskRotateAngle / 360.0) * 2.0 *PI;
+    #endif
+
+    v_sincos = vec4(cos(mainRotateRad), sin(mainRotateRad), cos(maskRotateRad), sin(maskRotateRad));
+  #endif
+
+  pos = cc_matViewProj * pos;
+
+  return pos;
+}

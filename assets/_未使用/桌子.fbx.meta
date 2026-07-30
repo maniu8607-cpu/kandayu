@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "3c03b167-6905-4688-a0bd-a96aa14fe2fe",
+  "files": [],
+  "subMetas": {
+    "45ae5": {
+      "importer": "gltf-mesh",
+      "uuid": "3c03b167-6905-4688-a0bd-a96aa14fe2fe@45ae5",
+      "displayName": "",
+      "id": "45ae5",
+      "name": "zhuozi.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 148
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "1cdd8": {
+      "importer": "gltf-material",
+      "uuid": "3c03b167-6905-4688-a0bd-a96aa14fe2fe@1cdd8",
+      "displayName": "",
+      "id": "1cdd8",
+      "name": "M_zhuozi.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "286e1": {
+      "importer": "gltf-scene",
+      "uuid": "3c03b167-6905-4688-a0bd-a96aa14fe2fe@286e1",
+      "displayName": "",
+      "id": "286e1",
+      "name": "桌子.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "3c03b167-6905-4688-a0bd-a96aa14fe2fe@45ae5"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "3c03b167-6905-4688-a0bd-a96aa14fe2fe@1cdd8"
+      ],
+      "scenes": [
+        "3c03b167-6905-4688-a0bd-a96aa14fe2fe@286e1"
+      ]
+    }
+  }
+}

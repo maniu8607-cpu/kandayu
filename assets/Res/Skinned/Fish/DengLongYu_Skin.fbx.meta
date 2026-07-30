@@ -1,0 +1,145 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d",
+  "files": [],
+  "subMetas": {
+    "82734": {
+      "importer": "gltf-mesh",
+      "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d@82734",
+      "displayName": "",
+      "id": "82734",
+      "name": "dengyu.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 448
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "438fe": {
+      "importer": "gltf-skeleton",
+      "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d@438fe",
+      "displayName": "",
+      "id": "438fe",
+      "name": "UnnamedSkeleton.skeleton",
+      "userData": {
+        "gltfIndex": 0,
+        "jointsLength": 8
+      },
+      "ver": "1.0.1",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5b30f": {
+      "importer": "texture",
+      "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d@5b30f",
+      "displayName": "",
+      "id": "5b30f",
+      "name": "Map #23.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/Res/Skinned/Fish/T_yu_BC.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "929f8": {
+      "importer": "gltf-material",
+      "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d@929f8",
+      "displayName": "",
+      "id": "929f8",
+      "name": "YU.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f51d3": {
+      "importer": "gltf-scene",
+      "uuid": "9a42a0bd-e1d3-4498-9ae5-932567eab24d@f51d3",
+      "displayName": "",
+      "id": "f51d3",
+      "name": "DengLongYu_Skin.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "Map #23",
+        "uri": "db://assets/Res/Skinned/Fish/T_yu_BC.png"
+      }
+    ],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "9a42a0bd-e1d3-4498-9ae5-932567eab24d@82734"
+      ],
+      "skeletons": [
+        "9a42a0bd-e1d3-4498-9ae5-932567eab24d@438fe"
+      ],
+      "textures": [
+        "9a42a0bd-e1d3-4498-9ae5-932567eab24d@5b30f"
+      ],
+      "materials": [
+        "9a42a0bd-e1d3-4498-9ae5-932567eab24d@929f8"
+      ],
+      "scenes": [
+        "9a42a0bd-e1d3-4498-9ae5-932567eab24d@f51d3"
+      ]
+    }
+  }
+}

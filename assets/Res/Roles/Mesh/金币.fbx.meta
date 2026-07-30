@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2",
+  "files": [],
+  "subMetas": {
+    "88257": {
+      "importer": "gltf-material",
+      "uuid": "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@88257",
+      "displayName": "",
+      "id": "88257",
+      "name": "M_jinbi2.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7a79c": {
+      "importer": "gltf-mesh",
+      "uuid": "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@7a79c",
+      "displayName": "",
+      "id": "7a79c",
+      "name": "jinbi.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "454c9": {
+      "importer": "gltf-scene",
+      "uuid": "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@454c9",
+      "displayName": "",
+      "id": "454c9",
+      "name": "金币.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@7a79c"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@88257"
+      ],
+      "scenes": [
+        "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@454c9"
+      ]
+    }
+  }
+}

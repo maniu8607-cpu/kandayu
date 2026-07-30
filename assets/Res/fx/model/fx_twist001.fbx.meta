@@ -1,0 +1,96 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "d88c0dd0-1890-4010-9bbc-bae059dd569c",
+  "files": [],
+  "subMetas": {
+    "a62fe": {
+      "importer": "gltf-mesh",
+      "uuid": "d88c0dd0-1890-4010-9bbc-bae059dd569c@a62fe",
+      "displayName": "",
+      "id": "a62fe",
+      "name": "Scene.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 222
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2deab": {
+      "importer": "gltf-material",
+      "uuid": "d88c0dd0-1890-4010-9bbc-bae059dd569c@2deab",
+      "displayName": "",
+      "id": "2deab",
+      "name": "Default_Material.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b662b": {
+      "importer": "gltf-scene",
+      "uuid": "d88c0dd0-1890-4010-9bbc-bae059dd569c@b662b",
+      "displayName": "",
+      "id": "b662b",
+      "name": "fx_twist001.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "d88c0dd0-1890-4010-9bbc-bae059dd569c@a62fe"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "d88c0dd0-1890-4010-9bbc-bae059dd569c@2deab"
+      ],
+      "scenes": [
+        "d88c0dd0-1890-4010-9bbc-bae059dd569c@b662b"
+      ]
+    }
+  }
+}

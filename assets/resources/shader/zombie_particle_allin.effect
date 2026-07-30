@@ -1,0 +1,447 @@
+CCEffect %{
+  temporaries:
+    b1: &b1
+      targets:
+      - blend: true
+        blendSrc: src_alpha
+        blendDst: one
+        blendSrcAlpha: src_alpha
+        blendDstAlpha: one
+    b2: &b2
+      targets:
+      - blend: true
+        blendSrc: src_alpha
+        blendDst: one_minus_src_alpha
+        blendSrcAlpha: zero
+        blendDstAlpha: one
+        blendAlphaEq: max
+    b3: &b3
+      targets:
+      - blend: true
+        blendSrc: dst_color
+        blendDst: one
+        blendSrcAlpha: zero
+        blendDstAlpha: dst_alpha
+    d1: &d1 { depthTest: true, depthWrite: false }
+    r1: &r1 { cullMode: none }
+    p1: &p1
+      mainTexture:            { value: grey }
+      mainTiling_Offset:      { value: [1, 1, 0, 0]  }
+     
+    p2: &p2
+      <<: *p1
+      tintColor:              { value: [0.5, 0.5, 0.5, 0.5], editor: { type: color } }
+      _CurveU:                { value: 0 }
+
+      # gradient
+      _GradientTex:                             { value: white, editor: { diplayNmae: 渐变色纹理}}
+
+      # main
+      _MainColor:                                { value: [1, 1, 1, 1], editor: { type: color, displayName: 主纹理颜色 } }
+      _MainTexPannerSpeed:                       { value: [0, 0], editor: { displayName: UV向流动速度 } }
+      _MainTexAlpha:                             { value: 1.0, editor: { displayName: '透明来源(1:A,0:R)', slider: true, range: [0, 1], step: 1} } 
+      _MainRotateAngle:                          { value: 0, editor: { displayName: 旋转, slider: true, range: [0, 360], step: 0.01}}
+      _MainUVClamp:                              { value: [0, 0], editor: {displayName: UV向Clamp } }
+      _MainTexPower:                             { value: 0, editor: { displayName: 对比度, slider: true, range: [0, 20], step: 0.01} }
+      _MainTexIntensity:                         { value: 0, editor: { displayName: 亮度, slider: true, range: [0, 50], step: 0.01} }
+      _MainTexRefineLerp:                        { value: 0.5, editor: { displayName: 混合度, slider: true, range: [0, 1], step: 0.01}}
+
+      # Fresnel
+      _FresnelColor:                             { value: [0, 0, 0, 0], editor: { displayName: 边缘光颜色, type: color} }
+      _FresnelBias:                              { value: 0, editor: { displayName: 底色亮度 }}
+      _FresnelScale:                             { value: 1, editor: { displayName: 边缘光亮度 }}
+      _FresnelPower:                             { value: 5, editor: { displayName: 边缘光强度, slider: true, range: [0, 20], step: 0.01}}
+      _FresnelElAlpha:                           { value: 0, editor: { displayName: '边缘光影响A通道((1:影响,0:不影响)', slider: true, range: [0, 1], step: 1}}
+      _FresnelElMinusAlpha:                      { value: 0, editor: { displayName: '边缘光影响A通道(反向)((1:影响,0:不影响)', slider: true, range: [0, 1], step: 1}} 
+
+      # mask
+      _MaskTex:                                  { value: white, editor: { displayName: 遮罩纹理 } }
+      _MaskTillingOffset:                        { value: [1.0, 1.0, 0.0, 0.0], editor: { displayName: 纹理Tilling & Offset } }
+      _MaskTexAlpha:                             { value: 1.0, editor: { displayName: '使用通道(1:A,0:R)', slider: true, range: [0, 1], step: 1 } } 
+      _MaskTexPannerSpeed:                       { value: [0, 0], editor: { displayName: UV向流动速度 } }
+      _MaskRotateAngle:                          { value: 0, editor: {  displayName: 旋转, slider: true, range: [0, 360], step: 0.01}}
+      _MaskUVClamp:                              { value: [0, 0], editor: { displayName: UV向Clamp } }
+      
+      # noise
+      _NoiseTex:                                 { value: white, editor: { displayName: 扰动纹理 }  }
+      _NoiseTillingOffset:                       { value: [1.0, 1.0, 0.0, 0.0], editor: { displayName: 纹理Tilling & Offset } }
+      _NoiseIntensity:                           { value: 0.5, editor: { displayName: 强度 } }
+      _NoiseTexPannerSpeed:                      { value: [0, 0], editor: { displayName: UV向流动速度 } }
+      
+      # dissolve
+      _DissolveTex:                              { value: white, editor: { displayName: 溶解纹理 } }
+      _DissolveTillingOffset:                    { value: [1.0, 1.0, 0.0, 0.0], editor: { displayName: 纹理Tilling & Offset } }
+      _DissolveTexAlpha:                         { value: 1.0, editor: { displayName: '使用通道(1:A,0:R)', slider: true, range: [0, 1], step: 1 } }
+      _DirectTex:                                { value: white, editor: { displayName: 定向纹理 } }
+      _DirectTillingOffset:                      { value: [1.0, 1.0, 0.0, 0.0], editor: {displayName: 纹理Tilling & Offset } }
+      _DirectTexAngle:                           { value: 0, editor: { displayName: 定向纹理旋转, slider: true, range: [0, 360], step: 0.01} }
+      _DissolveAmount:                           { value: 0, editor: { displayName: 溶解程度, slider: true, range: [0, 1], step: 0.01}}
+      _DissolveTexPannerSpeed:                   { value: [0, 0], editor: { displayName: 溶解UV向流动速度 }  }
+      _DissolveColor:                            { value: [0.5, 0.5, 0.5, 1.0], editor: { displayName: 溶解颜色, type: color} }
+      _OutlineIntensity:                         { value: 0.1, editor: { displayName: 边缘宽度, slider: true, range: [0, 0.5], step: 0.01} }
+      _BlendIntensity:                           { value: 0.1, editor: { displayName: 混合强度, slider: true, range: [0, 0.5], step: 0.01} }
+  techniques:
+  - name: add
+    passes:
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b1
+      properties: *p2
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:add
+      phase: deferred-forward
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b1
+      propertyIndex: 0
+  - name: alpha-blend
+    passes:
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      properties: *p2
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:add
+      phase: deferred-forward
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      propertyIndex: 0
+  - name: add-multiply
+    passes:
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:multiply
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b3
+      properties: *p2
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:multiply
+      phase: deferred-forward
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b3
+      propertyIndex: 0
+  - name: add-smooth
+    passes:
+    - vert: builtin/internal/particle-vs-legacy:lpvs_main
+      frag: no-tint-fs:addSmooth
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b1
+      properties: *p1
+    - vert: builtin/internal/particle-vs-legacy:lpvs_main
+      frag: no-tint-fs:addSmooth
+      phase: deferred-forward
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b1
+      propertyIndex: 0
+  - name: premultiply-blend
+    passes:
+    - vert: builtin/internal/particle-vs-legacy:lpvs_main
+      frag: no-tint-fs:premultiplied
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      properties: *p1
+    - vert: builtin/internal/particle-vs-legacy:lpvs_main
+      frag: no-tint-fs:premultiplied
+      phase: deferred-forward
+      rasterizerState: *r1
+      depthStencilState: *d1
+      blendState: *b2
+      propertyIndex: 0
+  - name: opaque
+    passes:
+    - vert: zombie_particle_vs:lpvs_main
+      frag: tinted-fs:add
+      rasterizerState: *r1
+      depthStencilState: { depthTest: true, depthWrite: true }
+      blendState:
+        targets:
+          - blend: false
+      properties: *p2
+}%
+
+// TODO: soft particle
+
+CCProgram tinted-fs %{
+  precision mediump float;
+  #include <legacy/output>
+
+  in vec2 uv;
+  in vec4 color;
+
+  in vec2 v_dissolveUV;
+  in vec2 v_maskUV;
+  in vec2 v_noiseUV;
+  in vec2 v_uv3;
+
+  #if ROTATE_ON
+    in vec4 v_sincos;
+  #endif
+
+  in vec2 v_sincosDirectTex;
+
+  in vec3 v_worldPos;
+  in vec3 v_worldNormal;
+
+  uniform sampler2D mainTexture;
+  #if USE_Gradient
+    uniform sampler2D _GradientTex;
+  #endif
+
+  uniform FragConstants {
+    vec4 tintColor;
+
+    vec4 _MainColor;
+    vec2 _MainUVClamp;
+    float _MainTexAlpha;
+  };
+
+  #if ENABLE_REFINE
+    uniform RefineConstant {
+      float _MainTexPower;
+      float _MainTexIntensity;
+      float _MainTexRefineLerp;
+    };
+  #endif
+
+  #if ENABLE_FRESNEL
+    uniform FresnelConstant {
+      vec4 _FresnelColor;
+      float _FresnelBias;
+      float _FresnelScale;
+      float _FresnelPower;
+      float _FresnelElAlpha;
+      float _FresnelElMinusAlpha;
+    };
+  #endif
+
+  #if ENABLE_NOISE
+    uniform sampler2D _NoiseTex;
+
+    uniform NoiseConstant {
+      float _NoiseIntensity;
+    };
+  #endif
+
+  #if ENABLE_MASK
+    uniform sampler2D _MaskTex;
+
+    uniform MaskConstant {
+      vec2 _MaskUVClamp;
+      float _MaskTexAlpha;
+    };
+  #endif 
+
+  #if ENABLE_DISSOLVE
+    uniform sampler2D _DissolveTex;
+    uniform sampler2D _DirectTex;
+
+    uniform DissolveConstant {
+      vec4 _DissolveColor;
+      float _DissolveAmount;
+      float _OutlineIntensity;
+      float _DissolveTexAlpha;
+      float _BlendIntensity;
+    };
+  #endif
+
+  vec2 RotateUV(vec2 inputUV, float cosV, float sinV) {
+    mat2 rotMat = mat2(cosV, -sinV, sinV, cosV);
+    vec2 outUV = rotMat * (inputUV - vec2(0.5)) + vec2(0.5);
+    return outUV;
+  }
+
+  vec4 solveColor() {
+    vec2 mainUV = uv;
+    vec2 maskUV = v_maskUV;
+    vec2 dissolveUV = v_dissolveUV;
+    
+    #if ENABLE_NOISE
+      #if NOISE_COMMON
+        vec4 noiseColor = texture(_NoiseTex, v_noiseUV);
+        noiseColor = (noiseColor * 2.0 - 1.0) * _NoiseIntensity;
+        mainUV += noiseColor.xy;
+
+        #if ENABLE_NOISE_DISSOLVE_ON
+          dissolveUV += noiseColor.xy;
+        #endif
+
+        #if ENABLE_NOISE_MASK_ON
+          maskUV += noiseColor.xy;
+        #endif
+      #else
+        float offset = 0.1;
+        vec4 noise0Color = texture(_NoiseTex, vec2(v_noiseUV.x + offset, v_noiseUV.y));
+        vec4 noise1Color = texture(_NoiseTex, vec2(v_noiseUV.x, v_noiseUV.y + offset));
+        vec3 tangent = vec3(1.0, 0.0, noise0Color.g);
+        vec3 binormal = vec3(0.0, 1.0, noise1Color.g);
+        vec3 normal = normalize(cross(tangent, binormal));
+        vec2 offsetUV = normal.xy * _NoiseIntensity;
+        mainUV += offsetUV.xy;
+
+        #if ENABLE_NOISE_DISSOLVE_ON
+          v_dissolveUV += offsetUV.xy;
+        #endif
+
+        #if ENABLE_NOISE_MASK_ON
+          v_maskUV + offsetUV.xy;
+        #endif
+      #endif
+    #endif
+
+    #if ROTATE_ON
+      mainUV = RotateUV(mainUV, v_sincos.x, v_sincos.y);
+    #endif
+
+    vec2 clampMainUV = clamp(mainUV, 0.0, 1.0);
+    mainUV.x = mix(mainUV.x, clampMainUV.x, _MainUVClamp.x);
+    mainUV.y = mix(mainUV.y, clampMainUV.y, _MainUVClamp.y);
+
+    // 主纹理
+    vec4 colMainTex = texture(mainTexture, mainUV);
+    float mainAlpha = mix(colMainTex.r, colMainTex.a, _MainTexAlpha);
+    float alpha = clamp(mainAlpha * _MainColor.a, 0.0, 1.0);
+    vec3 col = colMainTex.rgb;
+
+    #if USE_Gradient
+      vec3 gradientColor = texture(_GradientTex, mainUV).rgb;
+      col *= gradientColor;
+    #endif
+
+    #if ENABLE_REFINE
+      col = mix(col, pow(colMainTex.rgb, vec3(_MainTexPower))*_MainTexIntensity, _MainTexRefineLerp);
+    #endif
+
+    col = col * _MainColor.rgb;
+
+    vec4 finalColor = vec4(col, alpha);
+
+    // Fresnel
+    #if ENABLE_FRESNEL
+      vec3 worldPos = v_worldPos;
+      vec3 worldViewDir = normalize(cc_cameraPos.xyz - worldPos);
+      vec3 worldNormal = normalize(v_worldNormal);
+      float ndotv = clamp(abs(dot(worldNormal, worldViewDir)), 0.0, 1.0);
+
+      float fresnel = clamp(_FresnelBias + _FresnelScale * pow(1.0 - ndotv, _FresnelPower), 0.0, 1.0);
+      finalColor.xyz += fresnel * _FresnelColor.xyz;
+      finalColor.a *= mix(1.0, fresnel, _FresnelElAlpha);
+      float xxxx = clamp(pow(ndotv, _FresnelPower), 0.0, 1.0);
+      finalColor.a *= mix(1.0, xxxx, _FresnelElMinusAlpha);
+    #endif
+    
+    // 溶解
+    #if ENABLE_DISSOLVE
+      #if ENABLE_DISSOLVE_EDGE
+        // Dissolve Amount
+        float dissolveAmount = _DissolveAmount * (1.05 + _OutlineIntensity);
+
+        // Dissolve Value
+        vec4 colDissolveTex = texture(_DissolveTex, v_dissolveUV);
+        float colDissolveAlpha = mix(colDissolveTex.a, colDissolveTex.r, _DissolveTexAlpha);
+
+        // 方向扰动
+        vec2 dirUV = RotateUV(v_uv3.xy, v_sincosDirectTex.x, v_sincosDirectTex.y);
+        float dirTex = texture(_DirectTex, dirUV).r;
+        colDissolveAlpha *= dirTex;
+
+        float lerpA1 = step(dissolveAmount, (_OutlineIntensity + colDissolveAlpha));
+        float lerpB1 = step((_OutlineIntensity + colDissolveAlpha), dissolveAmount);
+
+        float hangingEdgeLerp = mix(lerpA1, 1.0, lerpA1*lerpB1);
+
+        vec3 mainDiss = finalColor.rgb * hangingEdgeLerp;
+        lerpA1 = step(dissolveAmount, colDissolveAlpha);
+        lerpB1 = step(colDissolveAlpha, dissolveAmount);
+
+        float dissLerp = mix(lerpA1, 1.0, lerpA1 * lerpB1);
+
+        float hangingEdge = hangingEdgeLerp - dissLerp;
+        float dissAlpha = dissLerp + hangingEdge;
+
+        vec3 emissive = ((mainDiss * dissAlpha * color.rgb) * _MainColor.a);
+      
+        finalColor.rgb = emissive + ( hangingEdge * _DissolveColor.rgb * mainDiss * _DissolveColor.a );
+        finalColor.a *= dissAlpha;  
+      #else
+        float dissolveAmount = _DissolveAmount * (1.05 + _OutlineIntensity);
+
+        vec4 colDissolveTex = texture(_DissolveTex, v_dissolveUV);
+        float colDissolveAlpha = mix(colDissolveTex.a, colDissolveTex.r, _DissolveTexAlpha);
+
+        vec2 dirUV = RotateUV(v_uv3.xy, v_sincosDirectTex.x, v_sincosDirectTex.y);
+        float dirTex = texture(_DirectTex, dirUV).r;
+        colDissolveAlpha *= dirTex;
+
+        float blendIntensity = _BlendIntensity + 0.0001;
+        float slope = 1.0 / (blendIntensity);
+        float range = blendIntensity + mix(0.0, 1.0-blendIntensity-_OutlineIntensity, colDissolveAlpha) - dissolveAmount;
+        float alphaRight = clamp((range +_OutlineIntensity) * slope, 0.0, 1.0);
+        float alphaLeft = clamp(range+slope, 0.0, 1.0);
+        float edgeAlpha = 1.0 - alphaLeft;
+
+        vec3 emissive = alphaLeft * color.rgb + _MainColor.rgb * finalColor.rgb;
+        finalColor.rgb = emissive + edgeAlpha * _DissolveColor.rgb;
+        finalColor.a = clamp(alphaRight * finalColor.a * _DissolveColor.a, 0.0, 1.0);
+      #endif
+    #endif
+
+    // Mask
+    #if ENABLE_MASK
+      #if ROTATE_ON
+        maskUV = RotateUV(maskUV, v_sincos.z, v_sincos.w);
+      #endif
+
+      vec2 clampMaskUV = clamp(maskUV.xy, 0.0, 1.0);
+      maskUV.x = mix(maskUV.x, clampMaskUV.x, _MaskUVClamp.x);
+      maskUV.y = mix(maskUV.y, clampMaskUV.y, _MaskUVClamp.y);
+
+      vec4 maskTex = texture(_MaskTex, maskUV);
+      float maskChannel = mix(maskTex.a, maskTex.r, _MaskTexAlpha);
+      finalColor.a *= maskChannel;
+    #endif
+
+    return finalColor;
+  }
+
+  vec4 add () {
+    vec4 col = solveColor();
+    col = 2.0 * color * tintColor * col;
+    return CCFragOutput(col);
+  }
+
+  vec4 multiply () {
+    vec4 col = solveColor();;
+    col.rgb = tintColor.rgb * color.rgb * vec3(2.0) * col.rgb;
+    return CCFragOutput(col);
+  }
+}%
+
+CCProgram no-tint-fs %{
+  precision mediump float;
+  #include <legacy/output>
+
+  in vec2 uv;
+  in vec4 color;
+
+  uniform sampler2D mainTexture;
+
+  vec4 addSmooth () {
+    vec4 col = color * texture(mainTexture, uv);
+    col.rgb *= col.a;
+    return CCFragOutput(col);
+  }
+
+  vec4 premultiplied () {
+    vec4 col = color * texture(mainTexture, uv) * color.a;
+    return CCFragOutput(col);
+  }
+}%
