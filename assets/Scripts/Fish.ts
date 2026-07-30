@@ -224,10 +224,12 @@ export class Fish extends Component {
             const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            // 沿鱼身随机撒在上表面
-            w.setPosition((Math.random() - 0.5) * 0.5, 0.16, (Math.random() - 0.5) * 0.18);
+            // 沿鱼身随机撒在上表面。注意 host(modelNode) 带 8 倍缩放且鱼体下沉：
+            // local y=0.16 时世界 y≈0.06 贴在水面，被鱼身整个盖住——要抬到背脊高度
+            w.setPosition((Math.random() - 0.5) * 0.5, 0.5, (Math.random() - 0.5) * 0.18);
             w.setRotationFromEuler(0, Math.random() * 360, 0);
-            const q = Skin.groundQuad(w, 0.18, 0.14, 'wound', new Color(150, 20, 20), 235);
+            // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
+            const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);
             q.setPosition(0, 0, 0);
         }
     }
