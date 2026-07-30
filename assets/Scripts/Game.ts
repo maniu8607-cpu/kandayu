@@ -70,6 +70,7 @@ export class Game extends Component {
     @property({ tooltip: '木桩显现耗时(s)：0=瞬间' }) barrierRevealTime = 0.35;
     @property({ tooltip: '相机跟随额外偏移（默认自动取开局时相机相对主角的位置）' }) cameraOffset = new Vec3(0, 0, 0);
     private _camFollowOffset = new Vec3();
+    @property({ tooltip: '收熟肉判定半径(px)：主角到烤后桌的最大距离，超出不吸附（地贴判定圈 100px 太宽会隔空吸肉）。0=只按地贴圈。注意贴中心离桌 62px，别设更小' }) pickCookedRangePx = 70;
     @property({ tooltip: '拖动提示钉在主角脚下（竞品样式）。关=保留场景里的固定屏幕位' }) dragTipFollow = true;
     @property({ tooltip: '拖动提示跟随时的屏幕偏移(UI px)：x右 y上' }) dragTipFollowOffset = new Vec3(0, -14, 0);
     private _tipUiPos = new Vec3();
@@ -523,6 +524,13 @@ export class Game extends Component {
         switch (p.plateId) {
             case 'pickMeat': break; // 地面肉靠磁吸，本贴只作站位引导
             case 'pickCooked': {
+                // 熟肉链：炉→烤后桌摆盘→主角贴近桌子才收。
+                // 地贴判定圈(distPan=2.5u)只做站位引导，吸附另加一道到桌子本体的贴近门槛
+                if (this.pickCookedRangePx > 0 && this.processLine?.backPan) {
+                    const bp = this.processLine.backPan.worldPosition;
+                    const pl = this.player.node.worldPosition;
+                    if (Math.hypot(pl.x - bp.x, pl.z - bp.z) > GameConfig.px(this.pickCookedRangePx)) return;
+                }
                 if (this._deliverBusy) return;
                 const n = this.processLine.backCount;
                 if (n <= 0 || bag.isCookedFull) return;
