@@ -17,6 +17,18 @@
     "_parent": null,
     "_children": [
       {
+        "__id__": 2
+      },
+      {
+        "__id__": 14
+      },
+      {
+        "__id__": 26
+      },
+      {
+        "__id__": 39
+      },
+      {
         "__id__": 51
       },
       {
@@ -27,9 +39,6 @@
       },
       {
         "__id__": 5235
-      },
-      {
-        "__id__": 5265
       }
     ],
     "_active": true,
@@ -74,7 +83,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5265
+      "__id__": 1
     },
     "_prefab": {
       "__id__": 3
@@ -157,7 +166,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "烤炉_主区"
+    "value": "烤肉台-002"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -239,7 +248,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5265
+      "__id__": 1
     },
     "_prefab": {
       "__id__": 15
@@ -322,7 +331,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "烤炉_扩建区"
+    "value": "烤肉台-003"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -404,7 +413,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5265
+      "__id__": 1
     },
     "_prefab": {
       "__id__": 27
@@ -582,7 +591,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5265
+      "__id__": 1
     },
     "_prefab": {
       "__id__": 40
@@ -665,7 +674,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "切割机"
+    "value": "切肉机"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -862,7 +871,7 @@
     "_illuminanceLDR": 1.6927083333333335,
     "_shadowEnabled": true,
     "_shadowPcf": 3,
-    "_shadowBias": 1e-05,
+    "_shadowBias": 0.00001,
     "_shadowNormalBias": 0,
     "_shadowSaturation": 0.9,
     "_shadowDistance": 100,
@@ -1122,6 +1131,18 @@
         "__id__": 232
       },
       {
+        "__id__": 249
+      },
+      {
+        "__id__": 261
+      },
+      {
+        "__id__": 278
+      },
+      {
+        "__id__": 290
+      },
+      {
         "__id__": 302
       },
       {
@@ -1207,6 +1228,9 @@
       },
       {
         "__id__": 716
+      },
+      {
+        "__id__": 733
       },
       {
         "__id__": 747
@@ -1967,7 +1991,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "桌子_售卖窗"
+    "value": "桌子"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -2132,7 +2156,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "桌子_烤后区"
+    "value": "桌子-001"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -2297,7 +2321,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "桌子_扩建区B"
+    "value": "桌子-003"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -2462,7 +2486,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "桌子_扩建区A"
+    "value": "桌子-002"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -4403,7 +4427,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5266
+      "__id__": 59
     },
     "_prefab": {
       "__id__": 250
@@ -4568,7 +4592,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5266
+      "__id__": 59
     },
     "_prefab": {
       "__id__": 262
@@ -4856,7 +4880,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5266
+      "__id__": 59
     },
     "_prefab": {
       "__id__": 279
@@ -5021,7 +5045,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5266
+      "__id__": 59
     },
     "_prefab": {
       "__id__": 291
@@ -10399,7 +10423,7 @@
     "__type__": "cc.Node",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 5265
+      "__id__": 59
     },
     "_prefab": {
       "__id__": 734
@@ -10485,7 +10509,7 @@
     "propertyPath": [
       "_name"
     ],
-    "value": "拦鱼木桩"
+    "value": "WeiQiang_3"
   },
   {
     "__type__": "CCPropertyOverrideInfo",
@@ -21071,7 +21095,7 @@
     ],
     "value": {
       "__type__": "cc.Quat",
-      "x": -4.7469124049755564e-05,
+      "x": -0.000047469124049755564,
       "y": 0.8072255718933788,
       "z": 0.09556343956380749,
       "w": -0.5824555801490997
@@ -63383,13 +63407,16 @@
     },
     "_children": [
       {
-        "__id__": 5205
-      },
-      {
         "__id__": 5167
       },
       {
+        "__id__": 5177
+      },
+      {
         "__id__": 5178
+      },
+      {
+        "__id__": 5205
       },
       {
         "__id__": 5212
@@ -63398,25 +63425,22 @@
         "__id__": 5214
       },
       {
+        "__id__": 5216
+      },
+      {
         "__id__": 5221
       },
       {
         "__id__": 5227
       },
       {
-        "__id__": 5216
+        "__id__": 5228
       },
       {
         "__id__": 5218
       },
       {
         "__id__": 5195
-      },
-      {
-        "__id__": 5228
-      },
-      {
-        "__id__": 5177
       },
       {
         "__id__": 5231
@@ -63460,7 +63484,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "锚点组",
+    "_name": "Points",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63529,7 +63553,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鱼_出生点",
+    "_name": "FishSpawn",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63570,7 +63594,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鱼_终点",
+    "_name": "FishEnd",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63611,7 +63635,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鱼_拦停参考点",
+    "_name": "FishBlock",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63652,7 +63676,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "掉肉中心",
+    "_name": "MeatDropCenter",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63693,7 +63717,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "顾客_入场点",
+    "_name": "CustomerSpawn",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63734,7 +63758,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "顾客_队首",
+    "_name": "QueueHead",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63775,7 +63799,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "顾客_队尾",
+    "_name": "QueueTail",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63816,7 +63840,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鳄鱼_出生点",
+    "_name": "CrocSpawn",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63857,7 +63881,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鳄鱼_终点",
+    "_name": "CrocEnd",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63898,7 +63922,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "飞行道具层",
+    "_name": "FlyLayer",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -63939,7 +63963,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "引导地贴组",
+    "_name": "Plates",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64017,7 +64041,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴01_放木桩",
+    "_name": "P0_wood",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64080,7 +64104,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴02_砍鱼",
+    "_name": "P1_chop",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64143,7 +64167,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴03_捡肉",
+    "_name": "P2_pickMeat",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64206,7 +64230,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴04_肉进烤炉",
+    "_name": "P3_ovenIn",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64269,7 +64293,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴05_取烤肉",
+    "_name": "P4_pickCooked",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64332,7 +64356,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴06_卖鱼上货",
+    "_name": "P5_sell",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64395,7 +64419,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴07_收金币",
+    "_name": "P6_pickCoin",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64458,7 +64482,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴08_买帮工",
+    "_name": "P7_buyHelper",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64523,7 +64547,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "帮工",
+    "_name": "Helper",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64607,7 +64631,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴09_买切割机",
+    "_name": "P8_buyCutter",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64672,7 +64696,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴10_买传送带",
+    "_name": "P9_buyBelt",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64737,7 +64761,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴11_扩建打通",
+    "_name": "P10_expand",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64800,7 +64824,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "贴12_砍鳄鱼",
+    "_name": "P11_chop2",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64863,7 +64887,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "主角",
+    "_name": "Player",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64924,7 +64948,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "背包_生肉点",
+    "_name": "BagPoint",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -64965,7 +64989,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "背包_金币点",
+    "_name": "CoinPoint",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65006,7 +65030,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "背包_熟肉点",
+    "_name": "CookedPoint",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65138,7 +65162,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鱼道_北河",
+    "_name": "FishLane",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65247,7 +65271,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "鱼道_鳄鱼二期",
+    "_name": "FishLane2",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65338,7 +65362,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "顾客队列",
+    "_name": "Customers",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65416,7 +65440,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "顾客模板",
+    "_name": "CustomerTemplate",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65517,7 +65541,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "烤炉流水线",
+    "_name": "ProcessLine",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65575,7 +65599,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "待烤盘",
+    "_name": "FrontPan",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65616,7 +65640,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "炉膛",
+    "_name": "OvenSlot",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65657,7 +65681,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "烤后盘",
+    "_name": "BackPan",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65698,7 +65722,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "售卖盘",
+    "_name": "SellPan",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65772,7 +65796,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "金币盘",
+    "_name": "CoinPan",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65813,7 +65837,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "引导箭头",
+    "_name": "GuideArrows",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65862,7 +65886,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "大箭头",
+    "_name": "BigArrow",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -65925,7 +65949,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "_废弃_CutterAnim",
+    "_name": "CutterAnim",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -67929,119 +67953,5 @@
   {
     "__type__": "cc.PostSettingsInfo",
     "_toneMappingType": 0
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "玩法设施",
-    "_objFlags": 0,
-    "__editorExtras__": {},
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [
-      {
-        "__id__": 5266
-      },
-      {
-        "__id__": 2
-      },
-      {
-        "__id__": 14
-      },
-      {
-        "__id__": 26
-      },
-      {
-        "__id__": 39
-      },
-      {
-        "__id__": 733
-      }
-    ],
-    "_active": true,
-    "_components": [],
-    "_prefab": null,
-    "_lpos": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_lrot": {
-      "__type__": "cc.Quat",
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "w": 1
-    },
-    "_euler": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_lscale": {
-      "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
-      "z": 1
-    },
-    "_mobility": 0,
-    "_layer": 1073741824,
-    "_id": "IQp+od9XXkUYypjCpusLmE"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "围墙_打通拆除",
-    "_objFlags": 0,
-    "__editorExtras__": {},
-    "_parent": {
-      "__id__": 5265
-    },
-    "_children": [
-      {
-        "__id__": 249
-      },
-      {
-        "__id__": 261
-      },
-      {
-        "__id__": 278
-      },
-      {
-        "__id__": 290
-      }
-    ],
-    "_active": true,
-    "_components": [],
-    "_prefab": null,
-    "_lpos": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_lrot": {
-      "__type__": "cc.Quat",
-      "x": 0,
-      "y": 0,
-      "z": 0,
-      "w": 1
-    },
-    "_euler": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_lscale": {
-      "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
-      "z": 1
-    },
-    "_mobility": 0,
-    "_layer": 1073741824,
-    "_id": "i+W2A8HIbOzo6mpF+adgyz"
   }
 ]

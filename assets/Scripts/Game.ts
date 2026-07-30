@@ -122,6 +122,7 @@ export class Game extends Component {
     }
 
     start() {
+        this.applyTuning();
         this.state = GameState.Play;
         // 沿用编辑器摆好的机位：记录相机相对主角的初始偏移
         if (this.cameraNode && this.playerNode) {
@@ -153,7 +154,7 @@ export class Game extends Component {
         }
         // FishBlock 是地编阶段标记拦截点用的参考鱼模型，运行时必须藏掉，
         // 否则它趴在拦截位上和真鱼叠成「一条半鱼」
-        director.getScene()?.walk(n => { if (n.name === 'FishBlock') n.active = false; });
+        director.getScene()?.walk(n => { if (n.name === 'FishBlock' || n.name === '鱼_拦停参考点') n.active = false; });
         this.fishLane?.init(3);
         this.customerQueue?.init();
         this.setupPlates();
@@ -181,6 +182,38 @@ export class Game extends Component {
     }
 
     @property({ tooltip: '视野拉远系数：1=地编机位原样，>1 拉远（竞品一屏能看到整个作业区）' }) camZoomOut = 1.25;
+
+    // ===== 数值调优（0 = 用 GameConfig 里的默认值，改这里立即生效不用碰代码）=====
+    @property({ group: '数值调优', tooltip: '鱼游速 px/s（默认210）' }) tuneFishSpeedPx = 0;
+    @property({ group: '数值调优', tooltip: '大鱼血量（默认600，60刀砍死）' }) tuneFishHp = 0;
+    @property({ group: '数值调优', tooltip: '砍鱼间隔秒（默认0.35）' }) tuneAttackInterval = 0;
+    @property({ group: '数值调优', tooltip: '主角每刀伤害（默认10）' }) tuneHitDamage = 0;
+    @property({ group: '数值调优', tooltip: '切割机每刀伤害（默认10）' }) tuneCutterDamage = 0;
+    @property({ group: '数值调优', tooltip: '主角每刀掉肉数（默认2）' }) tuneMeatPerChop = 0;
+    @property({ group: '数值调优', tooltip: '切割机每刀出肉数（默认3）' }) tuneCutterMeat = 0;
+    @property({ group: '数值调优', tooltip: '传送带上料间隔秒（默认0.8）' }) tuneBeltInterval = 0;
+    @property({ group: '数值调优', tooltip: '背包生肉/熟肉上限（默认50）' }) tuneBagMeatMax = 0;
+    @property({ group: '数值调优', tooltip: '背包金币视觉上限（默认30）' }) tuneBagCoinMax = 0;
+    @property({ group: '数值调优', tooltip: '地面肉块上限（默认50，超了停砍）' }) tuneGroundMeatMax = 0;
+    // 其他旋钮位置备忘：主角移速=Player 的 moveSpeedPx；解锁价格=各买贴的 needCoinOverride；
+    // 鱼间距/密度=FishLane 的 queueGapPx/respawnDistPx；烤炉=ProcessLine 的 cookBatch/cookTime
+
+    /** 把 Inspector 的调优值写回 GameConfig（>0 才覆盖） */
+    private applyTuning() {
+        const ov = (v: number, f: (x: number) => void) => { if (v > 0) f(v); };
+        ov(this.tuneFishSpeedPx, v => GameConfig.FISH_SPEED_PX = v);
+        ov(this.tuneFishHp, v => GameConfig.FISH_HP = v);
+        ov(this.tuneAttackInterval, v => GameConfig.ATTACK_INTERVAL = v);
+        ov(this.tuneHitDamage, v => GameConfig.HIT_DAMAGE = v);
+        ov(this.tuneCutterDamage, v => GameConfig.CUTTER_DAMAGE = v);
+        ov(this.tuneMeatPerChop, v => GameConfig.MEAT_PER_CHOP = v);
+        ov(this.tuneCutterMeat, v => GameConfig.CUTTER_MEAT = v);
+        ov(this.tuneBeltInterval, v => GameConfig.BELT_FEED_INTERVAL = v);
+        ov(this.tuneBagMeatMax, v => GameConfig.BAG_MEAT_MAX = v);
+        ov(this.tuneBagCoinMax, v => GameConfig.BAG_COIN_MAX = v);
+        ov(this.tuneGroundMeatMax, v => GameConfig.GROUND_MEAT_MAX = v);
+    }
+
     @property({ tooltip: '开场相机看鱼驻留秒数(竞品 2s)，0=关' }) introCamHold = 2;
     private _introHold = 0;
 
@@ -311,7 +344,7 @@ export class Game extends Component {
         const dx = pp.x - fp.x, dz = pp.z - fp.z;
         const dl = Math.hypot(dx, dz) || 1;
         this.spawnFx(this.hitFx, new Vec3(fp.x + dx / dl * 1.2, fp.y + 1.0, fp.z + dz / dl * 1.2), 0.9);
-        this.dropMeat(2, fish.node.worldPosition);
+        this.dropMeat(GameConfig.MEAT_PER_CHOP, fish.node.worldPosition);
         if (dead) {
             fish.playDie(() => this.fishLane.removeFish(fish.node));
         }
@@ -688,7 +721,7 @@ export class Game extends Component {
         }
         // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊，视觉冲击的核心
         const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true);
-        this.dropMeat(3, fish.node.worldPosition);
+        this.dropMeat(GameConfig.CUTTER_MEAT, fish.node.worldPosition);
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }
 
@@ -755,7 +788,7 @@ export class Game extends Component {
         }
         // 打通壁垒 = 拆掉横贯作业区的中央围墙（WeiQiang_9/10/11/12，z≈1.7 一排）
         director.getScene()?.walk(n => {
-            if (/^WeiQiang_(9|10|11|12)$/.test(n.name) && Math.abs(n.worldPosition.z - 1.7) < 0.5) {
+            if ((n.name === '围墙_打通拆除' || (/^WeiQiang_(9|10|11|12)$/.test(n.name) && Math.abs(n.worldPosition.z - 1.7) < 0.5))) {
                 tween(n).to(0.4, { scale: new Vec3(n.scale.x, 0.01, n.scale.z) })
                     .call(() => { n.active = false; })
                     .start();

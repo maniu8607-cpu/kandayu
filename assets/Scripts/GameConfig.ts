@@ -16,6 +16,8 @@ export class GameConfig {
     static FISH_HP = 600;
     static HIT_DAMAGE = 10;            // 每刀伤害（60 刀砍死）
     static ATTACK_INTERVAL = 0.35;     // 秒/刀
+    static MEAT_PER_CHOP = 2;          // 主角每刀掉肉数
+    static CUTTER_MEAT = 3;            // 切割机每刀出肉数
     static ATTACK_RANGE_PX = 100;      // 砍鱼判定距离
     static PICKUP_FACTOR = 0.75;       // 拾肉判定 = ATTACK_RANGE * 0.75
     static CUTTER_DAMAGE = 10;         // 切割机每次伤害（参考=10/循环,出肉靠 3块/次）
