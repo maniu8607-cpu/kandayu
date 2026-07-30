@@ -51,9 +51,9 @@ export class Plate extends Component {
         this._baseGreen.active = false;
         const iconMap: Record<string, string> = {
             chop: 'plate_footprint', chop2: 'plate_footprint', wood: 'plate_storage',
-            ovenIn: 'plate_cook', pickCooked: 'plate_cook', sell: 'plate_storage',
-            pickMeat: 'plate_storage', pickCoin: 'plate_storage',
-            buyHelper: 'plate_cashier', buyCutter: 'plate_knife', buyBelt: 'plate_knife', expand: 'plate_expand',
+            ovenIn: 'plate_cook', pickCooked: 'plate_cook', sell: 'plate_sell',
+            pickMeat: 'plate_meat', pickCoin: 'plate_cashier',
+            buyHelper: 'plate_helper', buyCutter: 'plate_knife', buyBelt: 'plate_belt', expand: 'plate_expand',
         };
         const icon = iconMap[this.plateId];
         if (icon) {

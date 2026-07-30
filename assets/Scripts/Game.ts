@@ -245,6 +245,10 @@ export class Game extends Component {
 
     /** 显现木桩：逐段弹出，全部显现后封锁鱼道 */
     private revealBarrier(onDone?: () => void) {
+        // 编辑器里木桩的容器（如「拦鱼木桩」组）可能被整体设为隐藏——
+        // 只点亮段节点没用，先把引用节点往上的祖先链全部打开（段本身留给下面逐段弹出）
+        const base = this.barrierNode ?? this.woodPiles;
+        for (let n = base?.parent; n && n.parent; n = n.parent) n.active = true;
         const segs = this.barrierSegments();
         if (!segs.length) { onDone && onDone(); return; }
         const step = segs.length > 1 ? this.barrierRevealTime / segs.length : 0;
@@ -423,15 +427,13 @@ export class Game extends Component {
             Skin.apply(m, 'T_yu_BC'); // 静态肉模型的 FBX 材质不带贴图，不套皮是白模
             m.setParent(this.flyLayer);
             m.setWorldPosition(fromWorld);
-            // 固定槽位堆放（不乱飞）：6 列循环,每 6 块升一层
+            // 用户拍板：整齐码放——固定 6 槽网格循环、每 6 块升一层、统一朝向（不再随机散布）
             const c = this.meatDropCenter.worldPosition;
-            // 竞品行为：肉散落在掉肉点周围的随机环带（面积均匀分布，椭圆压扁），
-            // 平铺在地上，主角踩拾肉贴统一收走（收进背包才是整齐的单列）
-            const ang = Math.random() * Math.PI * 2;
-            const r1 = 0.7, r2 = 2.0;
-            const r = Math.sqrt(r1 * r1 + Math.random() * (r2 * r2 - r1 * r1));
-            m.setRotationFromEuler(0, Math.random() * 360, 0);
-            const to = new Vec3(c.x + Math.cos(ang) * r * 0.85, c.y, c.z + Math.sin(ang) * r * 0.75);
+            const slot = Game.MEAT_SLOTS[this._meatDropIndex % Game.MEAT_SLOTS.length];
+            const layer = Math.floor(this._meatDropIndex / Game.MEAT_SLOTS.length);
+            this._meatDropIndex++;
+            m.setRotationFromEuler(0, 0, 0);
+            const to = new Vec3(c.x + slot[0], c.y + layer * 0.1, c.z + slot[1]);
             const local = new Vec3();
             this.flyLayer.inverseTransformPoint(local, to);
             FlyUtil.jumpTo(m, 0.2, local, GameConfig.px(150), () => {
@@ -458,6 +460,7 @@ export class Game extends Component {
         for (let k = 0; k < 2; k++) { // 每帧最多吸 2 块（飞行 0.25s，节奏接近竞品 40/s）
             const m = this._groundMeat.pop();
             if (!m) { this._meatDropIndex = 0; break; } // 堆空重新从底层码
+            this._meatDropIndex = Math.max(0, this._meatDropIndex - 1); // 槽位计数跟着堆走，从顶往下拆
             if (!m.isValid) continue;
             AudioMgr.play('pickup', 1, 80);
             bag.putItem(m, CarryType.RawMeat, GameConfig.JUMP_H_PICKUP_PX, () => {
@@ -602,6 +605,7 @@ export class Game extends Component {
             if (this._beltTimer >= GameConfig.BELT_FEED_INTERVAL && this._groundMeat.length > 0) {
                 this._beltTimer = 0;
                 const m = this._groundMeat.pop()!;
+                this._meatDropIndex = Math.max(0, this._meatDropIndex - 1);
                 if (m.isValid) this.processLine.beltCarry(m);
             }
         }
