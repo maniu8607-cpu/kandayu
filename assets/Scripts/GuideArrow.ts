@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, instantiate, Prefab, Color } from 'cc';
+import { _decorator, Component, Node, Vec3, instantiate, Prefab, Color, MeshRenderer, Camera, director } from 'cc';
 import { GameConfig } from './GameConfig';
 import { Skin } from './Skin';
 const { ccclass, property } = _decorator;
@@ -26,12 +26,17 @@ export class GuideArrow extends Component {
     private _arrows: Node[] = [];
     private _time = 0;
 
+    private static _camNode: Node | null = null;
+
     onLoad() {
-        // 大箭头缺省时代码建一个（绿色下压标记）
         if (!this.bigArrow) {
             this.bigArrow = new Node('BigArrowAuto');
             this.bigArrow.setParent(this.node);
-            const q = Skin.groundQuad(this.bigArrow, 1.3, 1.3, 'arrow_tri', new Color(60, 230, 120), 255);
+        }
+        // 场景里连的「大箭头」可能是个没有任何渲染组件的空节点——不补画面它就永远隐形。
+        // 竖立 billboard 的绿色下指箭头（竞品样式）；贴地平放的从斜俯相机看几乎糊没。
+        if (!this.bigArrow.getComponentInChildren(MeshRenderer)) {
+            const q = Skin.uprightQuad(this.bigArrow, 1.5, 1.5, 'arrow_big', new Color(60, 230, 120));
             q.setPosition(0, 0, 0);
         }
     }
@@ -83,6 +88,14 @@ export class GuideArrow extends Component {
             // 悬太高会飘离目标，压低到目标正上方一点，弹跳更醒目
             const bob = Math.sin(this._time * 7) * GameConfig.px(12);
             this.bigArrow.setWorldPosition(to.x, to.y + GameConfig.px(55) + bob, to.z);
+            // billboard 朝相机，箭头面始终可读
+            if (!GuideArrow._camNode || !GuideArrow._camNode.isValid) {
+                director.getScene()?.walk(n => {
+                    const c = n.getComponent(Camera);
+                    if (c && c.enabledInHierarchy && n.name.indexOf('UI') < 0 && !GuideArrow._camNode) GuideArrow._camNode = n;
+                });
+            }
+            if (GuideArrow._camNode) this.bigArrow.setWorldRotation(GuideArrow._camNode.worldRotation);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color } from 'cc';
+import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget } from 'cc';
 import { GameConfig } from './GameConfig';
 import { PlayerController } from './PlayerController';
 import { Backpack, CarryType } from './Backpack';
@@ -70,6 +70,9 @@ export class Game extends Component {
     @property({ tooltip: '木桩显现耗时(s)：0=瞬间' }) barrierRevealTime = 0.35;
     @property({ tooltip: '相机跟随额外偏移（默认自动取开局时相机相对主角的位置）' }) cameraOffset = new Vec3(0, 0, 0);
     private _camFollowOffset = new Vec3();
+    @property({ tooltip: '拖动提示钉在主角脚下（竞品样式）。关=保留场景里的固定屏幕位' }) dragTipFollow = true;
+    @property({ tooltip: '拖动提示跟随时的屏幕偏移(UI px)：x右 y上' }) dragTipFollowOffset = new Vec3(0, -14, 0);
+    private _tipUiPos = new Vec3();
 
     state = GameState.Boot;
     step = 0;
@@ -165,6 +168,8 @@ export class Game extends Component {
         });
         this.updateCoinLabel();
         if (this.dragTip) this.dragTip.active = true;
+        // 跟随模式下 Widget 每次重激活都会把提示拉回对齐位，和逐帧跟随打架，直接摘掉
+        if (this.dragTip && this.dragTipFollow) this.dragTip.getComponent(Widget)?.destroy();
         AudioMgr.playLoop('bgm', 0.5);
         AudioMgr.playLoop('fish_swim', 0.2);
         // 预热换皮材质：apply 首载是异步的，不预热的话第一批掉肉/金币在贴图就位前是白模
@@ -273,6 +278,7 @@ export class Game extends Component {
     update(dt: number) {
         if (this.state !== GameState.Play) return;
         this.updateIdleTip(dt);
+        this.updateDragTipFollow();
         this.updatePlates(dt);
         this.updateChop(dt);
         this.updateMeatPickup();
@@ -296,6 +302,14 @@ export class Game extends Component {
             playerPos: this.player ? [+this.player.node.worldPosition.x.toFixed(2), +this.player.node.worldPosition.z.toFixed(2)] : null,
             moving: this.player?.isMoving ?? false,
         };
+    }
+
+    /** 拖动提示钉在主角脚下：3D 世界坐标投到 UI 画布局部坐标（竞品摇杆贴主角样式） */
+    private updateDragTipFollow() {
+        if (!this.dragTipFollow || !this.dragTip || !this.dragTip.activeInHierarchy) return;
+        if (!this.mainCamera || !this.playerNode || !this.dragTip.parent) return;
+        this.mainCamera.convertToUINode(this.playerNode.worldPosition, this.dragTip.parent, this._tipUiPos);
+        this.dragTip.setPosition(this._tipUiPos.x + this.dragTipFollowOffset.x, this._tipUiPos.y + this.dragTipFollowOffset.y, 0);
     }
 
     private updateIdleTip(dt: number) {

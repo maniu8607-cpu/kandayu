@@ -66219,11 +66219,18 @@
     "barrierRevealTime": 0.35,
     "cameraOffset": {
       "__type__": "cc.Vec3",
-      "x": -11,
+      "x": -17,
       "y": 24,
-      "z": 8
+      "z": 11
     },
-    "camZoomOut": 1.25,
+    "dragTipFollow": true,
+    "dragTipFollowOffset": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": -14,
+      "z": 0
+    },
+    "camZoomOut": 0.85,
     "tuneFishSpeedPx": 0,
     "tuneFishHp": 0,
     "tuneAttackInterval": 0,

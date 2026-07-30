@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, tween, MeshRenderer, Color, Material, director, Camera } from 'cc';
+import { _decorator, Component, Node, Vec3, tween, Tween, MeshRenderer, Color, Material, director, Camera } from 'cc';
 import { GameConfig } from './GameConfig';
 import { Skin } from './Skin';
 import { AudioMgr } from './AudioMgr';
@@ -61,7 +61,18 @@ export class Fish extends Component {
         Skin.getTintMat(this.skinTex, 'red', new Color(255, 70, 70, 255), m => { this._redMat = m; });
     }
 
-    update() {
+    // —— 游动泡圈（竞品鱼嘴前的白圈串）——
+    @property({ tooltip: '游动气泡拖尾间隔(s)，0=关' }) bubbleInterval = 0.28;
+    @property({ tooltip: '气泡在鱼嘴前方的距离(世界单位)' }) bubbleAhead = 2.4;
+    private _bubbleTimer = 0;
+    private _bubbles: Node[] = [];
+    private _bubbleIdx = 0;
+
+    update(dt: number) {
+        if (this.bubbleInterval > 0 && this.state === FishState.Swim) {
+            this._bubbleTimer += dt;
+            if (this._bubbleTimer >= this.bubbleInterval) { this._bubbleTimer = 0; this.spawnBubble(); }
+        }
         // 血条跟随（血条挂在鱼道层,不随鱼旋转）+ billboard 朝相机
         // 贴地朝上的血条从斜俯视角看被压成几像素、还被鱼背挡住——必须正对屏幕
         if (this._barRoot && this._barRoot.isValid) {
@@ -77,7 +88,39 @@ export class Fish extends Component {
         }
     }
 
+    /** 泡圈铺在鱼嘴前方水面，涨大再缩没。节点池循环复用（不逐泡新建材质） */
+    private spawnBubble() {
+        const parent = this.node.parent;
+        if (!parent) return;
+        let b: Node;
+        if (this._bubbles.length < 6) {
+            b = new Node('bubbleHost');
+            b.setParent(parent);
+            const q = Skin.groundQuad(b, 1, 1, 'fish_bubble', new Color(255, 255, 255), 170);
+            q.setPosition(0, 0, 0);
+            this._bubbles.push(b);
+        } else {
+            b = this._bubbles[this._bubbleIdx % this._bubbles.length];
+        }
+        this._bubbleIdx++;
+        Tween.stopAllByTarget(b);
+        const f = this.node.forward;
+        const p = this.node.worldPosition;
+        b.setWorldPosition(
+            p.x + f.x * this.bubbleAhead + (Math.random() - 0.5) * 0.6,
+            p.y + 0.12,
+            p.z + f.z * this.bubbleAhead + (Math.random() - 0.5) * 0.6);
+        b.active = true;
+        b.setScale(0.3, 0.3, 0.3);
+        tween(b)
+            .to(0.5, { scale: new Vec3(0.9, 0.9, 0.9) })
+            .to(0.35, { scale: new Vec3(0.04, 0.04, 0.04) })
+            .call(() => { b.active = false; })
+            .start();
+    }
+
     onDestroy() {
+        this._bubbles.forEach(b => { if (b.isValid) { Tween.stopAllByTarget(b); b.destroy(); } });
         if (this._barRoot && this._barRoot.isValid) this._barRoot.destroy();
         if (this._bloodPool && this._bloodPool.isValid) {
             // 血泊残留 2s 再消,别跟着尸体瞬间蒸发

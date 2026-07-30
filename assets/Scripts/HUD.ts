@@ -14,11 +14,13 @@ export class HUD extends Component {
     @property({ type: Node, tooltip: '结算页容器（初始隐藏）' }) endCard: Node = null!;
 
     private _tipTime = 0;
+    private _brand: Node | null = null;
     private static readonly UI_LAYER = 1 << 25; // UI_2D
 
     onLoad() {
         this.buildCoin();
         this.buildTip();
+        this.buildBrand();
         this.buildEnd();
         this.markLayer(this.node);
     }
@@ -135,7 +137,60 @@ export class HUD extends Component {
         if (on) {
             if (this.dragTip && this.dragTip.active) this.dragTip.active = false;
             if (this.coinCounter && this.coinCounter.active) this.coinCounter.active = false;
+            // 结算页自带大 logo+按钮，角落小份收起免得重影
+            if (this._brand && this._brand.active) this._brand.active = false;
         }
+    }
+
+    /** 左上角常驻 logo + Play now（竞品全程挂着，随时可点跳店） */
+    private buildBrand() {
+        const brand = new Node('brand');
+        brand.setParent(this.node);
+        brand.addComponent(UITransform).setContentSize(10, 10);
+        const w = brand.addComponent(Widget);
+        w.isAlignTop = true; w.isAlignLeft = true;
+        w.top = 24; w.left = 20;
+        w.alignMode = Widget.AlignMode.ON_WINDOW_RESIZE;
+        const logo = new Node('logo');
+        logo.setParent(brand);
+        logo.setPosition(120, -78);
+        logo.addComponent(UITransform).setContentSize(240, 160);
+        this.loadUiSprite(logo, 'logo', 240, 160, () => {
+            const t = new Node('t');
+            t.setParent(logo);
+            const lb = t.addComponent(Label);
+            lb.string = '砍大鱼';
+            lb.fontSize = 56; lb.lineHeight = 60; lb.isBold = true;
+            lb.color = new Color(255, 230, 120, 255);
+            lb.enableOutline = true;
+            lb.outlineColor = new Color(120, 60, 10, 255);
+            lb.outlineWidth = 4;
+        }, true);
+        const btn = new Node('playnow');
+        btn.setParent(brand);
+        btn.setPosition(105, -196);
+        btn.addComponent(UITransform).setContentSize(200, 64);
+        this.loadUiSprite(btn, 'playnow', 200, 64, gg => {
+            gg.fillColor = new Color(255, 170, 30, 255);
+            gg.roundRect(-95, -30, 190, 60, 16);
+            gg.fill();
+            const t = new Node('t');
+            t.setParent(btn);
+            const lb = t.addComponent(Label);
+            lb.string = 'PLAY NOW';
+            lb.fontSize = 30; lb.lineHeight = 34; lb.isBold = true;
+            lb.color = new Color(255, 255, 255, 255);
+        }, true);
+        tween(btn)
+            .to(0.5, { scale: new Vec3(1.1, 1.1, 1) })
+            .to(0.5, { scale: new Vec3(1, 1, 1) })
+            .union()
+            .repeatForever()
+            .start();
+        const jump = () => { console.log('[sdk] jump store'); };
+        btn.on(Input.EventType.TOUCH_END, jump);
+        btn.on(Input.EventType.MOUSE_UP, jump);
+        this._brand = brand;
     }
 
     private buildEnd() {
