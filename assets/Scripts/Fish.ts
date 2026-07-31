@@ -190,7 +190,7 @@ export class Fish extends Component {
         this.updateBloodBar();
         this.playHitFeedback();
         // 竞品口径：主角砍=鱼眼一道划痕；切割机=三道爪痕（明显更多）
-        if (sustainRed) this.spawnCutterWounds(); else this.spawnEyeWound();
+        if (sustainRed) this.spawnCutterWounds(fromWorld); else this.spawnEyeWound();
         const ratio = this.hp / GameConfig.FISH_HP;
         if (this.hp <= 0) {
             this.state = FishState.Dead;
@@ -226,7 +226,7 @@ export class Fish extends Component {
         if (this._sustainRed) this.flashRed();
     }
 
-    @property({ tooltip: '切割机伤口上限（密集感）' }) maxWounds = 9;
+    @property({ tooltip: '切割机伤口上限（聚集在刀口处两三道）' }) maxWounds = 3;
     private _wounds = 0;
 
     private _eyeWound = false;
@@ -256,29 +256,35 @@ export class Fish extends Component {
         q.setPosition(0, 0, 0);
     }
 
-    /** 切割机：每刀新增 3 道爪痕，沿身长随机密布直到 maxWounds（密集感，和主角单道明显区分） */
-    private spawnCutterWounds() {
+    /** 切割机：伤痕聚集在刀砍到的位置（把刀口世界坐标投到鱼局部），两三道成簇 */
+    private spawnCutterWounds(fromWorld?: Vec3) {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
+        let cz = 0.1, cx = 0;
+        if (fromWorld) {
+            const lp = new Vec3();
+            host.inverseTransformPoint(lp, fromWorld);
+            cz = Math.max(-0.38, Math.min(0.38, lp.z)); // 身长=local z
+            cx = Math.max(-0.1, Math.min(0.1, lp.x));   // 身宽小幅
+        }
         for (let i = 0; i < 3 && this._wounds < this.maxWounds; i++) {
             this._wounds++;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            // 沿身长(local z)随机密布，x 是身宽小幅抖动
-            w.setPosition((Math.random() - 0.5) * 0.16, 0.5, (Math.random() - 0.5) * 0.72);
-            w.setRotationFromEuler(0, Math.random() * 360, 0);
+            w.setPosition(cx + (Math.random() - 0.5) * 0.08, 0.45, cz + [-0.11, 0, 0.11][i % 3] + (Math.random() - 0.5) * 0.04);
+            w.setRotationFromEuler(0, 60 + Math.random() * 60, 0);
             // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
             const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);
             q.setPosition(0, 0, 0);
         }
     }
 
-    /** 受击变红 0.15s；切割机模式(_sustainRed)下保持红色不恢复 */
+    /** 受击变红 0.15s 即恢复（用户拍板：机器砍也是砍一下红一下，不保持常红） */
     private flashRed() {
         this.ensureMats();
         if (this._redMat) {
             this._renderers.forEach(r => { if (r.isValid) for (let i = 0; i < r.sharedMaterials.length; i++) r.setSharedMaterial(this._redMat!, i); });
             this.unschedule(this._restoreMat);
-            if (!this._sustainRed) this.scheduleOnce(this._restoreMat, 0.15);
+            this.scheduleOnce(this._restoreMat, 0.15);
         }
     }
 

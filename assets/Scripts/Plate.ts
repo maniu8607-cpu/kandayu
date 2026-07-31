@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, tween, Color } from 'cc';
+import { _decorator, Component, Node, Vec3, tween, Color, Label, RenderRoot2D } from 'cc';
 import { GameConfig } from './GameConfig';
 import { Skin } from './Skin';
 const { ccclass, property } = _decorator;
@@ -40,6 +40,9 @@ export class Plate extends Component {
 
     private _baseWhite: Node | null = null;
     private _baseGreen: Node | null = null;
+    private _greenSize = { x: 1, z: 1 };
+    private _priceLabel: Label | null = null;
+    private _lastRem = -1;
 
     onLoad() {
         // 可视化：底框（白/绿两张，踩上切绿）+ 业务图标。素材缺失时回退色块。
@@ -59,6 +62,51 @@ export class Plate extends Component {
         if (icon) {
             const ic = Skin.groundQuad(this.node, s * 0.55, s * 0.55, icon, new Color(60, 60, 60), 120);
             ic.setPosition(0, 0.05, 0);
+        }
+        // 买类贴：金币付款进度（绿底从中心涨满）+ 剩余价格数字（竞品样式）
+        if (buy) {
+            this._greenSize = { x: s, z: s * 0.72 };
+            if (this._baseGreen) this._baseGreen.setScale(0.01, 0.01, 1); // 初始 0 进度
+            this.buildPriceTag(s);
+        }
+    }
+
+    /** 价格牌：平躺的「铜钱图标 + 剩余金币数」，付款时数字递减（RenderRoot2D 世界空间文字） */
+    private buildPriceTag(baseS: number) {
+        const tag = new Node('priceTag');
+        tag.setParent(this.node);
+        tag.setPosition(0.22, 0.12, baseS * 0.22);
+        tag.setRotationFromEuler(-90, -49, 0); // 平躺贴地 + 补相机 yaw(-48.6°)，数字在屏幕上正向可读
+        tag.setScale(0.012, 0.012, 0.012);
+        tag.addComponent(RenderRoot2D);
+        const lb = new Node('num');
+        lb.setParent(tag);
+        const l = lb.addComponent(Label);
+        l.string = '';
+        l.fontSize = 64; l.lineHeight = 68; l.isBold = true;
+        l.color = new Color(255, 255, 255, 255);
+        l.enableOutline = true;
+        l.outlineColor = new Color(45, 45, 45, 255);
+        l.outlineWidth = 5;
+        this._priceLabel = l;
+        const icon = new Node('coinIconSmall');
+        icon.setParent(this.node);
+        icon.setPosition(-0.42, 0.12, baseS * 0.22);
+        const q = Skin.groundQuad(icon, 0.4, 0.4, 'plate_cashier', new Color(240, 200, 60), 255);
+        q.setPosition(0, 0, 0);
+    }
+
+    update() {
+        if (this.kind !== PlateKind.Buy || this.done) return;
+        const rem = Math.max(0, this.needCoin - this.paidCoin);
+        if (rem === this._lastRem) return;
+        this._lastRem = rem;
+        if (this._priceLabel) this._priceLabel.string = String(rem);
+        // 进度：绿底从中心涨到满（付满=全绿）
+        const t = this.needCoin > 0 ? Math.min(1, this.paidCoin / this.needCoin) : 0;
+        if (this._baseGreen) {
+            this._baseGreen.active = t > 0.01;
+            this._baseGreen.setScale(Math.max(0.01, this._greenSize.x * t), Math.max(0.01, this._greenSize.z * t), 1);
         }
     }
 
@@ -85,8 +133,11 @@ export class Plate extends Component {
         if (this.occupied === v) return;
         this.occupied = v;
         if (this.highlightNode) this.highlightNode.active = v;
-        if (this._baseWhite) this._baseWhite.active = !v;
-        if (this._baseGreen) this._baseGreen.active = v;
+        // 买类贴的白/绿由付款进度接管（绿=进度条），不随踩踏切换
+        if (this.kind !== PlateKind.Buy) {
+            if (this._baseWhite) this._baseWhite.active = !v;
+            if (this._baseGreen) this._baseGreen.active = v;
+        }
         // 弹性反馈
         if (v) {
             tween(this.node)

@@ -26,6 +26,9 @@ export class CustomerQueue extends Component {
     gapPx = 55;
 
     private _list: Customer[] = [];
+    /** 已成交离场中的顾客：从 _list 摘除后必须在这里继续驱动走位，
+     *  否则会僵在队首原地循环最后的动画直到销毁（“排队却播 walk”的元凶之一） */
+    private _leaving: Customer[] = [];
 
     get frontCustomer(): Customer | null {
         const c = this._list[0];
@@ -94,8 +97,10 @@ export class CustomerQueue extends Component {
         if (!c) return;
         c.state = CustomerState.Leave;
         c.showBubble(false);
-        // 离场：走回入场点方向然后销毁
-        c.targetPos.set(this.spawnPoint.worldPosition);
+        // 离场：沿南侧车道走回入场点（直接照队列线走会穿过后面排队的人）
+        const sp = this.spawnPoint.worldPosition;
+        c.targetPos.set(sp.x, sp.y, sp.z + 1.1);
+        this._leaving.push(c);
         this.scheduleOnce(() => { if (c.node.isValid) c.node.destroy(); }, 6);
         this.scheduleOnce(() => { this.spawn(); }, 0.5);
     }
@@ -108,10 +113,17 @@ export class CustomerQueue extends Component {
             const cw = this.cameraNode.worldPosition;
             this._list.forEach(c => c.faceBubbleTo(cw));
         }
+        // 离场顾客继续驱动（已不在 _list 里）
+        this._leaving = this._leaving.filter(c => c.node && c.node.isValid);
+        this._leaving.forEach(c => c.stepToTarget(dt));
         // 队列走位
         this._list.forEach((c, i) => {
             if (c.state === CustomerState.Leave) { c.stepToTarget(dt); return; }
             this.assignTarget(c, i);
+            // 新进场的沿南侧车道走到自己槽位的横向位置，再拐进队列——直线走会穿过前面排队的人
+            if (c.state === CustomerState.WalkIn && Math.abs(c.node.worldPosition.x - c.targetPos.x) > 0.8) {
+                c.targetPos.z += 1.1;
+            }
             const arrived = c.stepToTarget(dt);
             if (arrived && c.state === CustomerState.WalkIn) c.state = CustomerState.Queue;
         });

@@ -163,7 +163,8 @@ export class Game extends Component {
         this.customerQueue?.init();
         this.setupPlates();
         this.initBarrier();
-        this.makeCarryWood();
+        // 推迟一帧：要挂到 PlayerController.start 里才生成的模型转向层上，start 顺序不定
+        this.scheduleOnce(() => this.makeCarryWood(), 0);
         this.player?.onFirstDrag(() => {
             if (this.dragTip) this.dragTip.active = false;
             this.gotoStep(0);
@@ -248,8 +249,9 @@ export class Game extends Component {
     private makeCarryWood() {
         if (!this.woodPrefab || !this.playerNode || this._carryWood) return;
         const holder = new Node('CarryWood');
-        holder.setParent(this.playerNode);
-        // 竞品样式：全部同向平行的横板，从背部起整齐往上码一摞（不交错）
+        // 挂到会随朝向旋转的模型层：转身时木捆跟着背走（挂 playerNode 上是世界固定朝向）
+        holder.setParent(this.player?.modelNode ?? this.playerNode);
+        // 竞品样式：全部同向平行的横板，从背部（模型局部 -z）起整齐往上码一摞
         holder.setPosition(0, 0.75, -0.32);
         // 木头 prefab 原生是竖杆朝向且 FBX 材质发黑——放平 + 统一刷木色
         const woodMat = new Material();
@@ -445,8 +447,9 @@ export class Game extends Component {
         });
     }
 
-    /** 竞品出肉演出：伤口处一圈鲜红血滴向外炸开、驻留片刻再缩没（血雾粒子之外的实体血点层） */
-    private spawnBloodSplats(atWorld: Vec3, count = 7) {
+    /** 竞品出肉演出：伤口处一圈鲜红血滴向外炸开、驻留片刻再缩没（血雾粒子之外的实体血点层）
+     *  spread=散布半径系数 sizeK=血滴大小系数（切割机要收敛些，别太夸张） */
+    private spawnBloodSplats(atWorld: Vec3, count = 7, spread = 1, sizeK = 1) {
         for (let i = 0; i < count; i++) {
             const n = new Node('bloodSplat');
             n.setParent(this.flyLayer);
@@ -456,8 +459,8 @@ export class Game extends Component {
             n.setScale(0.08, 0.08, 0.08);
             n.setRotationFromEuler(0, Math.random() * 360, 0);
             const ang = Math.random() * Math.PI * 2;
-            const r = 0.3 + Math.random() * 1.5;
-            const s = 0.22 + Math.random() * 0.45;
+            const r = (0.3 + Math.random() * 1.5) * spread;
+            const s = (0.22 + Math.random() * 0.45) * sizeK;
             const to = new Vec3(atWorld.x + Math.cos(ang) * r, atWorld.y + 0.06, atWorld.z + Math.sin(ang) * r * 0.7);
             tween(n)
                 .to(0.12, { worldPosition: to, scale: new Vec3(s, s, s) })
@@ -869,25 +872,27 @@ export class Game extends Component {
         this._cutterTimer += dt;
         if (this._cutterTimer < GameConfig.ATTACK_INTERVAL) return;
         this._cutterTimer = 0;
-        // 竞品是三个刀片劈砍；本机三刀片烘死在同一网格（jixie 无子节点拆不开），
-        // 用「三连快压」模拟三刀节奏（真三刀分离动画需模型拆件，美术台账挂着）
+        // 劈砍动画：转 jixie 子节点绕 X 轴 -45° 再回弹——机器臂立着、三刀片向前下劈进鱼身
+        // （实测形态与竞品一致；pivot 恰在机器臂根部，直接转就行，不用拆件）
         if (this._cutterNode && this._cutterNode.isValid) {
-            const bx = this._cutterNode.position.x, bz = this._cutterNode.position.z;
-            let t = tween(this._cutterNode);
-            for (let k = 0; k < 3; k++) {
-                t = t.to(0.05, { position: new Vec3(bx, this._cutterBaseY - 0.5, bz) })
-                    .to(0.07, { position: new Vec3(bx, this._cutterBaseY, bz) });
+            const jx = this._cutterNode.getChildByName('jixie');
+            if (jx) {
+                tween(jx)
+                    .to(0.07, { eulerAngles: new Vec3(-45, 0, 0) })
+                    .to(0.12, { eulerAngles: new Vec3(0, 0, 0) })
+                    .start();
             }
-            t.start();
         }
         // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊+三道伤口+每刀血雾，视觉冲击的核心
         const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true, this._cutterNode?.worldPosition);
         // 每刀血雾：位置沿鱼身随机撒，密集切割感（拦停鱼身长沿世界 x）
+        // 血雾/血滴/出肉都聚在刀口接触带（切割机与鱼身之间），不再全身乱撒；量也收敛
         const cfp = fish.node.worldPosition;
-        const burst = new Vec3(cfp.x + (Math.random() - 0.5) * 3, cfp.y + 1.3, cfp.z + (Math.random() - 0.5) * 0.8);
+        const ctp = this._cutterNode && this._cutterNode.isValid ? this._cutterNode.worldPosition : cfp;
+        const burst = new Vec3((cfp.x + ctp.x) / 2 + (Math.random() - 0.5) * 0.4, cfp.y + 1.2, (cfp.z + ctp.z) / 2);
         this.spawnFx(this.hitFx, burst, 0.9);
-        this.spawnBloodSplats(burst, 9);
-        this.dropMeat(GameConfig.CUTTER_MEAT, burst); // 肉从血雾处蹦出
+        this.spawnBloodSplats(burst, 4, 0.7, 0.7);
+        this.dropMeat(GameConfig.CUTTER_MEAT, burst); // 肉从刀口处蹦出
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }
 

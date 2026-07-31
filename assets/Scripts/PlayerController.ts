@@ -58,6 +58,18 @@ export class PlayerController extends Component {
         // 静态 FBX 内部网格子节点带出轴偏移（场景覆盖不持久），运行时归零 XZ
         const ch = this.modelNode?.children[0];
         if (ch && !this._animator) ch.setPosition(0, ch.position.y, 0);
+        // 背篓/金币挂点挪到会转向的模型层：转身时背上的木头/肉/金币跟着背走（竞品样式）。
+        // 挂 playerNode 上朝向是世界固定的，转身后货会「悬在体侧」
+        const bp = this.getComponent(Backpack);
+        if (bp && this.modelNode) {
+            [bp.bagPoint, bp.cookedPoint, bp.coinPoint].forEach(p => {
+                if (p && p.isValid && p.parent !== this.modelNode) {
+                    const lp = p.position.clone();
+                    p.setParent(this.modelNode);
+                    p.setPosition(lp); // 保留局部偏移，「背后」语义随模型朝向
+                }
+            });
+        }
         // 脚下光环（竞品同款站位指示）
         const ring = new Node('FootRing');
         ring.setParent(this.node);

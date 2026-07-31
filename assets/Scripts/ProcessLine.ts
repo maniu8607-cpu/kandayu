@@ -26,7 +26,7 @@ export class ProcessLine extends Component {
     smokeNode: Node = null!;
     @property({ tooltip: '烤制时长(s)' })
     cookTime = 1.2;
-    @property({ tooltip: '传送带起点（可空，解锁后用）' })
+    @property({ type: Node, tooltip: '传送带起点（可空，解锁后用）' })
     beltStart: Node = null!;
     @property({ type: Node, tooltip: '传送带终点（可空）' })
     beltEnd: Node = null!;
