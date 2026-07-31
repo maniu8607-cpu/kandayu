@@ -37,10 +37,11 @@ export class ProcessLine extends Component {
     get backCount() { return this.backPan.children.length; }
     get sellCount() { return this.sellPan.children.length; }
 
-    /** 收一块生肉进前桌（世界坐标起飞） */
+    /** 收一块生肉进前桌（世界坐标起飞）。3×2 六槽平铺再叠层——单列会叠成通天柱 */
     receiveRaw(item: Node, onEnd?: () => void) {
         const idx = this.frontCount;
-        const localTo = new Vec3(0, idx * GameConfig.stackPan, 0);
+        const col = idx % 3, row = Math.floor(idx / 3) % 2, layer = Math.floor(idx / 6);
+        const localTo = new Vec3((col - 1) * 0.28, layer * GameConfig.stackPan, (row - 0.5) * 0.3);
         FlyUtil.jumpToNode(item, 0.1, this.frontPan, localTo, GameConfig.px(GameConfig.JUMP_H_DELIVER_PX), () => {
             if (idx >= 120) item.destroy(); // 溢出保护
             onEnd && onEnd();
@@ -94,10 +95,11 @@ export class ProcessLine extends Component {
                                 Skin.apply(cooked, 'T_yu_BC');
                                 it.destroy();
                             }
-                            // 竞品出餐感：熟肉垫白盘，两摞沿桌子长边高高叠起
+                            // 竞品出餐感（fishpos2）：熟肉垫白盘，三列沿桌子长边(z)叠高
+                            // 列距 0.48：桌面 z 半长 0.72，三列 ±0.48 刚好都在桌上
                             const idx = this.backCount;
-                            const col = idx % 2, row = Math.floor(idx / 2);
-                            const localTo = new Vec3(0, row * 0.3, (col - 0.5) * 1.2);
+                            const col = idx % 3, row = Math.floor(idx / 3);
+                            const localTo = new Vec3(0, row * 0.3, (col - 1) * 0.48);
                             const dish = new Node('quad_dish'); // quad_ 前缀避开 Skin 套皮
                             dish.setParent(cooked);
                             // 缩放来自整条父链(ovenSlot/backPan)，必须用世界缩放补偿，盘子才是恒定世界尺寸

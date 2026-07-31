@@ -231,8 +231,10 @@ export class Fish extends Component {
             if (fromWorld) {
                 const lp = new Vec3();
                 host.inverseTransformPoint(lp, fromWorld);
-                lx = Math.max(-0.4, Math.min(0.4, lp.x)) + (Math.random() - 0.5) * 0.08;
-                lz = Math.max(-0.15, Math.min(0.15, lp.z));
+                // 同一站位连续砍时投影点相同，三道伤口会叠成一道——按序号沿身长展开
+                const spread = [0, -0.17, 0.17][(this._wounds - 1) % 3];
+                lx = Math.max(-0.4, Math.min(0.4, lp.x + spread + (Math.random() - 0.5) * 0.05));
+                lz = Math.max(-0.15, Math.min(0.15, lp.z)) + (Math.random() - 0.5) * 0.07;
             }
             if (count > 1) lx = -0.3 + 0.3 * ((this._wounds - 1) % 3); // 三刀片沿身长均布
             w.setPosition(lx, 0.5, lz);

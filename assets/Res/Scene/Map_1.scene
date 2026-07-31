@@ -65494,9 +65494,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 3.33,
-      "y": 0.95,
-      "z": -3.3
+      "x": 3.37,
+      "y": 0.56,
+      "z": -2.82
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -65536,7 +65536,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 3.33,
-      "y": 1.05,
+      "y": 0.62,
       "z": -2.26
     },
     "_lrot": {
@@ -65576,8 +65576,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 3.35,
-      "y": 0.9,
+      "x": 3.33,
+      "y": 0.33,
       "z": -0.6
     },
     "_lrot": {
@@ -66223,6 +66223,7 @@
       "y": 24,
       "z": 11
     },
+    "pickCookedRangePx": 55,
     "dragTipFollow": true,
     "dragTipFollowOffset": {
       "__type__": "cc.Vec3",
