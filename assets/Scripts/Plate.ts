@@ -66,7 +66,11 @@ export class Plate extends Component {
         // 买类贴：金币付款进度（绿底从中心涨满）+ 剩余价格数字（竞品样式）
         if (buy) {
             this._greenSize = { x: s, z: s * 0.72 };
-            if (this._baseGreen) this._baseGreen.setScale(0.01, 0.01, 1); // 初始 0 进度
+            if (this._baseGreen) {
+                // 进度条式：全宽、从底边(南缘/屏幕下方)往上涨；抬高避免与白底 z-fight
+                this._baseGreen.setScale(s, 0.01, 1);
+                this._baseGreen.setPosition(0, 0.045, this._greenSize.z / 2);
+            }
             this.buildPriceTag(s);
         }
     }
@@ -75,7 +79,8 @@ export class Plate extends Component {
     private buildPriceTag(baseS: number) {
         const tag = new Node('priceTag');
         tag.setParent(this.node);
-        tag.setPosition(0.22, 0.12, baseS * 0.22);
+        // 数字在贴内部靠底边（绿色进度先淹到它），竞品样式
+        tag.setPosition(0.24, 0.12, baseS * 0.26);
         tag.setRotationFromEuler(-90, -49, 0); // 平躺贴地 + 补相机 yaw(-48.6°)，数字在屏幕上正向可读
         tag.setScale(0.012, 0.012, 0.012);
         tag.addComponent(RenderRoot2D);
@@ -91,7 +96,7 @@ export class Plate extends Component {
         this._priceLabel = l;
         const icon = new Node('coinIconSmall');
         icon.setParent(this.node);
-        icon.setPosition(-0.42, 0.12, baseS * 0.22);
+        icon.setPosition(-0.42, 0.12, baseS * 0.26);
         const q = Skin.groundQuad(icon, 0.4, 0.4, 'plate_cashier', new Color(240, 200, 60), 255);
         q.setPosition(0, 0, 0);
     }
@@ -102,11 +107,13 @@ export class Plate extends Component {
         if (rem === this._lastRem) return;
         this._lastRem = rem;
         if (this._priceLabel) this._priceLabel.string = String(rem);
-        // 进度：绿底从中心涨到满（付满=全绿）
+        // 进度：绿条全宽、从底边往上涨（竞品样式，付满=全绿盖满）
         const t = this.needCoin > 0 ? Math.min(1, this.paidCoin / this.needCoin) : 0;
         if (this._baseGreen) {
             this._baseGreen.active = t > 0.01;
-            this._baseGreen.setScale(Math.max(0.01, this._greenSize.x * t), Math.max(0.01, this._greenSize.z * t), 1);
+            this._baseGreen.setScale(this._greenSize.x, Math.max(0.01, this._greenSize.z * t), 1);
+            // 底边固定：中心随高度上移
+            this._baseGreen.setPosition(0, 0.045, this._greenSize.z * (1 - t) / 2);
         }
     }
 

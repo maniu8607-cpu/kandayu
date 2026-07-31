@@ -264,6 +264,9 @@ export class Game extends Component {
             w.setRotationFromEuler(90, 90, 0);
             w.setScale(0.5, 0.5, 0.5);
             w.getComponentsInChildren(MeshRenderer).forEach(r => {
+                // quad_ 前缀：木捆现在挂在模型树里，Skin.apply 的异步回调会把整树套角色皮
+                // （木头变蓝就是套上了渔夫图集），只有 quad_ 开头的节点会被跳过
+                r.node.name = 'quad_' + r.node.name;
                 for (let k = 0; k < r.sharedMaterials.length; k++) r.setSharedMaterial(woodMat, k);
             });
         }
@@ -440,7 +443,7 @@ export class Game extends Component {
             // 竞品出肉演出：血雾+一圈血滴炸在伤口上，肉从伤口位置蹦出来再飞进肉堆
             this.spawnFx(this.hitFx, eye, 0.9);
             this.spawnBloodSplats(eye, 7);
-            this.dropMeat(GameConfig.MEAT_PER_CHOP, eye);
+            this.dropMeat(GameConfig.MEAT_PER_CHOP, eye, true); // 肉先蹦出悬停一拍再飞走，看得清出肉
             if (dead) {
                 fish.playDie(() => this.fishLane.removeFish(fish.node));
             }
@@ -471,6 +474,7 @@ export class Game extends Component {
         }
     }
 
+    private _jixieBaseY: number | null = null;
     private _flyKnife: Node | null = null;
 
     /** 飞刀：手刀隐掉，克隆体旋转着飞到目标点（鱼眼）命中回调，再飞回手上 */
@@ -552,7 +556,7 @@ export class Game extends Component {
     ];
     private _meatDropIndex = 0;
 
-    private dropMeat(count: number, fromWorld: Vec3) {
+    private dropMeat(count: number, fromWorld: Vec3, popFirst = false) {
         if (!this.rawMeatPrefab || !this.meatDropCenter) return;
         if (this._groundMeat.length > GameConfig.GROUND_MEAT_MAX) return;
         for (let i = 0; i < count; i++) {
@@ -570,11 +574,18 @@ export class Game extends Component {
             const to = new Vec3(c.x + slot[0], c.y + layer * 0.1, c.z + slot[1]);
             const local = new Vec3();
             this.flyLayer.inverseTransformPoint(local, to);
-            FlyUtil.jumpTo(m, 0.2, local, GameConfig.px(150), () => {
+            const fly = () => FlyUtil.jumpTo(m, popFirst ? 0.42 : 0.2, local, GameConfig.px(150), () => {
                 this._groundMeat.push(m);
                 // 参考：第一块肉落地即亮拾肉引导（不等鱼死）
                 if (this.step === 1) this.gotoStep(2);
             });
+            if (popFirst) {
+                // 先从伤口蹦出来悬停一拍（看得清「肉出来了」），再飞去肉堆
+                tween(m)
+                    .by(0.24, { worldPosition: new Vec3((Math.random() - 0.5) * 0.7, 0.55 + Math.random() * 0.25, (Math.random() - 0.5) * 0.5) })
+                    .call(fly)
+                    .start();
+            } else fly();
         }
     }
 
@@ -872,14 +883,17 @@ export class Game extends Component {
         this._cutterTimer += dt;
         if (this._cutterTimer < GameConfig.ATTACK_INTERVAL) return;
         this._cutterTimer = 0;
-        // 劈砍动画：转 jixie 子节点绕 X 轴 -45° 再回弹——机器臂立着、三刀片向前下劈进鱼身
-        // （实测形态与竞品一致；pivot 恰在机器臂根部，直接转就行，不用拆件）
+        // 三刀刃上下砍（用户拍板：不要旋转摇摆）。三刀片烘死在 jixie 单网格里，
+        // 整排刀快速下压回弹=三刀齐砍；三刀交错独立起落需模型拆件（美术台账挂着）
         if (this._cutterNode && this._cutterNode.isValid) {
             const jx = this._cutterNode.getChildByName('jixie');
             if (jx) {
+                if (this._jixieBaseY === null) this._jixieBaseY = jx.position.y;
+                const bx2 = jx.position.x, bz2 = jx.position.z;
+                jx.setRotationFromEuler(0, 0, 0);
                 tween(jx)
-                    .to(0.07, { eulerAngles: new Vec3(-45, 0, 0) })
-                    .to(0.12, { eulerAngles: new Vec3(0, 0, 0) })
+                    .to(0.06, { position: new Vec3(bx2, this._jixieBaseY - 0.65, bz2) })
+                    .to(0.12, { position: new Vec3(bx2, this._jixieBaseY, bz2) })
                     .start();
             }
         }

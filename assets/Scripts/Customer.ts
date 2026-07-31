@@ -111,6 +111,18 @@ export class Customer extends Component {
         if (this.bubbleNode) this.bubbleNode.active = v;
     }
 
+    /** 吃饱成交：气泡换微笑表情（竞品同款），离场路上一直挂着 */
+    showSmile() {
+        this.ensureBubble();
+        if (this.bubbleNode) this.bubbleNode.active = true;
+        const q = this._bubbleQuad;
+        if (!q || !q.isValid) return;
+        resources.load('texture/ui/bubble_emoji/texture', Texture2D, (err, tex) => {
+            if (err || !tex || !q.isValid) return;
+            Skin.setQuadTexture(q, tex);
+        });
+    }
+
     /** 气泡朝向相机（每帧轻量：只在有气泡时算） */
     faceBubbleTo(camWorld: Vec3) {
         if (!this.bubbleNode || !this.bubbleNode.activeInHierarchy) return;

@@ -30,6 +30,8 @@ export class ProcessLine extends Component {
     beltStart: Node = null!;
     @property({ type: Node, tooltip: '传送带终点（可空）' })
     beltEnd: Node = null!;
+    @property({ type: Node, tooltip: '传送带拐点（可空，带面不是直线时按 起点→拐点→终点 走）' })
+    beltCorner: Node = null!;
 
     private _cooking = false;
 
@@ -49,10 +51,32 @@ export class ProcessLine extends Component {
     }
 
     private _smokeOn = false;
+    private _smokeTimer = 0;
 
-    update() {
+    /** 程序烟团：kdy_yanwu 材质缺贴图表现打折，用白色软烟贴图补一层升腾烟雾 */
+    private spawnSmokePuff() {
+        if (!this.ovenSlot) return;
+        const n = new Node('smokePuff');
+        n.setParent(this.node);
+        const q = Skin.groundQuad(n, 1, 1, 'smoke_puff', new Color(250, 250, 250), 170);
+        q.setPosition(0, 0, 0);
+        const p = this.ovenSlot.worldPosition;
+        n.setWorldPosition(p.x + (Math.random() - 0.5) * 0.35, p.y + 0.35, p.z + (Math.random() - 0.5) * 0.3);
+        n.setScale(0.35, 0.35, 0.35);
+        tween(n)
+            .to(0.9, { worldPosition: new Vec3(n.worldPosition.x, p.y + 1.6, n.worldPosition.z), scale: new Vec3(0.95, 0.95, 0.95) })
+            .to(0.22, { scale: new Vec3(0.04, 0.04, 0.04) })
+            .call(() => { if (n.isValid) n.destroy(); })
+            .start();
+    }
+
+    update(dt: number) {
         // 有肉即烤，一次一块
         if (!this._cooking && this.frontCount > 0) this.cookOne();
+        if (this._cooking) {
+            this._smokeTimer += dt;
+            if (this._smokeTimer >= 0.35) { this._smokeTimer = 0; this.spawnSmokePuff(); }
+        }
         if (this.smokeNode) {
             this.smokeNode.active = this._cooking;
             if (this._cooking && !this._smokeOn) {
@@ -163,17 +187,20 @@ export class ProcessLine extends Component {
         return n > 0 ? this.sellPan.children[n - 1] : null;
     }
 
-    /** 传送带：把一块生肉从带头运到带尾再入前桌（解锁传送带后自动链路用） */
+    /** 传送带：把一块生肉从带头沿带面运到带尾再入前桌（带面有拐点时走折线，贴着箭头纹路） */
     beltCarry(item: Node, onEnd?: () => void) {
         if (!this.beltStart || !this.beltEnd) { this.receiveRaw(item, onEnd); return; }
         const wp = item.worldPosition.clone();
         item.setParent(this.node);
         item.setWorldPosition(wp);
         AudioMgr.play('belt', 0.7, 300);
-        tween(item)
-            .to(0.1, { worldPosition: this.beltStart.worldPosition })
-            .to(0.6, { worldPosition: this.beltEnd.worldPosition })
-            .call(() => this.receiveRaw(item, onEnd))
-            .start();
+        let t = tween(item).to(0.1, { worldPosition: this.beltStart.worldPosition });
+        if (this.beltCorner) {
+            t = t.to(0.35, { worldPosition: this.beltCorner.worldPosition })
+                .to(0.35, { worldPosition: this.beltEnd.worldPosition });
+        } else {
+            t = t.to(0.6, { worldPosition: this.beltEnd.worldPosition });
+        }
+        t.call(() => this.receiveRaw(item, onEnd)).start();
     }
 }

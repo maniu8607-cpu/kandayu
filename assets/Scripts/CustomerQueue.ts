@@ -96,7 +96,7 @@ export class CustomerQueue extends Component {
         const c = this._list.shift();
         if (!c) return;
         c.state = CustomerState.Leave;
-        c.showBubble(false);
+        c.showSmile(); // 吃饱了：饥饿图标换微笑，带着表情离场
         // 离场：沿南侧车道走回入场点（直接照队列线走会穿过后面排队的人）
         const sp = this.spawnPoint.worldPosition;
         c.targetPos.set(sp.x, sp.y, sp.z + 1.1);
