@@ -677,10 +677,11 @@ export class Game extends Component {
             case 'pickCoin': {
                 if (this._deliverBusy) return;
                 const n = this.coinPan ? this.coinPan.children.length : 0;
-                if (n <= 0) return;
+                if (n <= 0) { this._coinPanSeq = 0; return; } // 盘空归零，槽位从底层重新排
                 const coinNode = this.coinPan.children[n - 1];
                 this._deliverBusy = true;
                 AudioMgr.play('pickup');
+                this._coinPanSeq = Math.max(0, this._coinPanSeq - 1); // 槽位计数跟着盘走，从顶往下拆
                 this.player.backpack.putCoin(coinNode, () => {
                     this.coin++;
                     this.updateCoinLabel();
@@ -918,26 +919,31 @@ export class Game extends Component {
     }
 
     /** 金币从顾客位置连串抛物线喷到收银盘（竞品：0.03s/枚,弧高 300px） */
+    /** 收银盘槽位预定序号：不能用 children.length——币 0.03s/枚连发而飞行要 0.35s，
+     *  起飞时按实时计数算槽位会让同一批币全算到同一格叠成一摞（拾取时递减、盘空归零） */
+    private _coinPanSeq = 0;
+
     private spawnCoins(count: number, fromWorld: Vec3) {
         if (!this.coinPrefab || !this.coinPan) return;
-        let fired = 0;
-        const fire = () => {
-            const c = instantiate(this.coinPrefab);
-            Skin.apply(c, 'jinibi_2'); // 金币 FBX 材质不带贴图，不套皮是白模
-            c.setParent(this.flyLayer);
-            c.setWorldPosition(fromWorld.x, fromWorld.y + 0.8, fromWorld.z);
-            const idx = this.coinPan.children.length;
-            const col = idx % 6, row = Math.floor(idx / 6);
-            const gap = GameConfig.px(28);
-            const to = new Vec3((col % 3 - 1) * gap, row * GameConfig.stackCoin, (col < 3 ? 0 : 1) * gap * 0.8);
-            AudioMgr.play('pickup', 0.7, 90);
-            FlyUtil.jumpToNode(c, 0.35, this.coinPan, to, GameConfig.px(300), () => {
-                if (idx >= GameConfig.PAN_MAX) c.destroy();
-            });
-            fired++;
-            if (fired < count) this.scheduleOnce(fire, GameConfig.COIN_FLY_INTERVAL);
-        };
-        fire();
+        // 每枚用独立闭包一次性排期。不能递归 scheduleOnce(同一个回调)——
+        // 调度器按 (target,callback) 去重，回调内重挂自身会被清理吞链，连发只出前几枚
+        for (let i = 0; i < count; i++) {
+            this.scheduleOnce(() => {
+                if (!this.coinPan || !this.coinPan.isValid) return;
+                const c = instantiate(this.coinPrefab);
+                Skin.apply(c, 'jinibi_2'); // 金币 FBX 材质不带贴图，不套皮是白模
+                c.setParent(this.flyLayer);
+                c.setWorldPosition(fromWorld.x, fromWorld.y + 0.8, fromWorld.z);
+                const idx = this._coinPanSeq++;
+                const col = idx % 6, row = Math.floor(idx / 6);
+                const gap = GameConfig.px(28);
+                const to = new Vec3((col % 3 - 1) * gap, row * GameConfig.stackCoin, (col < 3 ? 0 : 1) * gap * 0.8);
+                AudioMgr.play('pickup', 0.7, 90);
+                FlyUtil.jumpToNode(c, 0.35, this.coinPan, to, GameConfig.px(300), () => {
+                    if (idx >= GameConfig.PAN_MAX) c.destroy();
+                });
+            }, i * GameConfig.COIN_FLY_INTERVAL);
+        }
     }
 
     private onExpand() {
