@@ -65452,18 +65452,18 @@
     },
     "chopPointLocal": {
       "__type__": "cc.Vec3",
-      "x": 0.08,
+      "x": 0.34,
       "y": 0.45,
-      "z": 0.05
+      "z": 0.13
     },
     "cutterPointLocal": {
       "__type__": "cc.Vec3",
-      "x": 0.08,
-      "y": 0.45,
-      "z": -0.15
+      "x": 0.153,
+      "y": 0.358,
+      "z": -0.009
     },
     "barrierNode": null,
-    "stopOffset": 4.2,
+    "stopOffset": 3.35,
     "fishPitch": 0,
     "fishScaleA": 8,
     "fishScaleB": 8,
@@ -66415,7 +66415,7 @@
     "tuneBagMeatMax": 0,
     "tuneBagCoinMax": 0,
     "tuneGroundMeatMax": 0,
-    "debugPoseCutting": true,
+    "debugPoseCutting": false,
     "introCamHold": 2,
     "fxScale": 1,
     "helperCarryMax": 10,
