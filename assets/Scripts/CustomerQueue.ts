@@ -92,16 +92,20 @@ export class CustomerQueue extends Component {
     }
 
     /** 队首买完离场；参考行为：补人只发生在成交时（0.5s 后队尾进新人） */
+    /** 离开列与排队列的横向间距(世界单位)：两列并行不重合 */
+    @property({ tooltip: '离开列与排队列的间距(世界单位)' })
+    leaveLaneOffset = 1.1;
+
     dismissFront() {
         const c = this._list.shift();
         if (!c) return;
         c.state = CustomerState.Leave;
         c.showSmile(); // 吃饱了：饥饿图标换微笑，带着表情离场
-        // 离场：沿南侧车道走回入场点（直接照队列线走会穿过后面排队的人）
-        const sp = this.spawnPoint.worldPosition;
-        c.targetPos.set(sp.x, sp.y, sp.z + 1.1);
+        // 双列队形：先侧移一步进「离开列」（与排队列平行），再沿离开列原路走回入场点
+        const p = c.node.worldPosition;
+        c.targetPos.set(p.x, p.y, p.z + this.leaveLaneOffset);
         this._leaving.push(c);
-        this.scheduleOnce(() => { if (c.node.isValid) c.node.destroy(); }, 6);
+        this.scheduleOnce(() => { if (c.node.isValid) c.node.destroy(); }, 8);
         this.scheduleOnce(() => { this.spawn(); }, 0.5);
     }
 
@@ -113,19 +117,22 @@ export class CustomerQueue extends Component {
             const cw = this.cameraNode.worldPosition;
             this._list.forEach(c => c.faceBubbleTo(cw));
         }
-        // 离场顾客继续驱动（已不在 _list 里）
+        // 离开列：侧移到位后转向沿离开列走回入场点（与排队列并行，不重合）
         this._leaving = this._leaving.filter(c => c.node && c.node.isValid);
-        this._leaving.forEach(c => c.stepToTarget(dt));
-        // 队列走位
+        const sp = this.spawnPoint.worldPosition;
+        this._leaving.forEach(c => {
+            const arrived = c.stepToTarget(dt);
+            if (arrived && Math.abs(c.node.worldPosition.x - sp.x) > 0.5) {
+                // 已完成侧移（还没到入场点横向位置）→ 沿离开列直行回去
+                c.targetPos.set(sp.x, sp.y, c.node.worldPosition.z);
+            }
+        });
+        // 排队列走位：进场顾客沿队列线直达队尾（队尾在最后，不会穿过任何人）
         this._list.forEach((c, i) => {
             // 气泡只挂队首一人（竞品样式），全队都顶着图标太乱
             c.showBubble(i === 0);
             if (c.state === CustomerState.Leave) { c.stepToTarget(dt); return; }
             this.assignTarget(c, i);
-            // 新进场的沿南侧车道走到自己槽位的横向位置，再拐进队列——直线走会穿过前面排队的人
-            if (c.state === CustomerState.WalkIn && Math.abs(c.node.worldPosition.x - c.targetPos.x) > 0.8) {
-                c.targetPos.z += 1.1;
-            }
             const arrived = c.stepToTarget(dt);
             if (arrived && c.state === CustomerState.WalkIn) c.state = CustomerState.Queue;
         });
