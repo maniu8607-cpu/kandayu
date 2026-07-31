@@ -249,16 +249,17 @@ export class Game extends Component {
         if (!this.woodPrefab || !this.playerNode || this._carryWood) return;
         const holder = new Node('CarryWood');
         holder.setParent(this.playerNode);
-        holder.setPosition(0, 1.3, -0.3);
-        // 木头 prefab 原生是竖杆朝向且 FBX 材质发黑——放平交错叠 + 统一刷木色
+        // 竞品样式：全部同向平行的横板，从背部起整齐往上码一摞（不交错）
+        holder.setPosition(0, 0.75, -0.32);
+        // 木头 prefab 原生是竖杆朝向且 FBX 材质发黑——放平 + 统一刷木色
         const woodMat = new Material();
         woodMat.initialize({ effectName: 'builtin-unlit' });
         woodMat.setProperty('mainColor', new Color(176, 122, 66, 255));
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             const w = instantiate(this.woodPrefab);
             w.setParent(holder);
-            w.setPosition(0, i * 0.09, 0);
-            w.setRotationFromEuler(90, i % 2 ? 90 : 0, 0);
+            w.setPosition(0, i * 0.085, 0);
+            w.setRotationFromEuler(90, 90, 0);
             w.setScale(0.5, 0.5, 0.5);
             w.getComponentsInChildren(MeshRenderer).forEach(r => {
                 for (let k = 0; k < r.sharedMaterials.length; k++) r.setSharedMaterial(woodMat, k);
@@ -434,8 +435,9 @@ export class Game extends Component {
         this.throwKnife(eye, () => {
             if (!fish.isValid || !fish.alive) return;
             const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
+            // 竞品出肉演出：血雾炸在伤口上，肉从伤口位置蹦出来再飞进肉堆
             this.spawnFx(this.hitFx, eye, 0.9);
-            this.dropMeat(GameConfig.MEAT_PER_CHOP, fish.node.worldPosition);
+            this.dropMeat(GameConfig.MEAT_PER_CHOP, eye);
             if (dead) {
                 fish.playDie(() => this.fishLane.removeFish(fish.node));
             }
@@ -841,20 +843,24 @@ export class Game extends Component {
         this._cutterTimer += dt;
         if (this._cutterTimer < GameConfig.ATTACK_INTERVAL) return;
         this._cutterTimer = 0;
-        // 竞品切割机每刀播切割动画；本机器模型无动画资产，用「整机下压回弹」模拟上下砍
+        // 竞品是三个刀片劈砍；本机三刀片烘死在同一网格（jixie 无子节点拆不开），
+        // 用「三连快压」模拟三刀节奏（真三刀分离动画需模型拆件，美术台账挂着）
         if (this._cutterNode && this._cutterNode.isValid) {
             const bx = this._cutterNode.position.x, bz = this._cutterNode.position.z;
-            tween(this._cutterNode)
-                .to(0.05, { position: new Vec3(bx, this._cutterBaseY - 0.45, bz) })
-                .to(0.16, { position: new Vec3(bx, this._cutterBaseY, bz) })
-                .start();
+            let t = tween(this._cutterNode);
+            for (let k = 0; k < 3; k++) {
+                t = t.to(0.05, { position: new Vec3(bx, this._cutterBaseY - 0.5, bz) })
+                    .to(0.07, { position: new Vec3(bx, this._cutterBaseY, bz) });
+            }
+            t.start();
         }
         // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊+三道伤口+每刀血雾，视觉冲击的核心
         const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true, this._cutterNode?.worldPosition);
         // 每刀血雾：位置沿鱼身随机撒，密集切割感（拦停鱼身长沿世界 x）
         const cfp = fish.node.worldPosition;
-        this.spawnFx(this.hitFx, new Vec3(cfp.x + (Math.random() - 0.5) * 3, cfp.y + 1.3, cfp.z + (Math.random() - 0.5) * 0.8), 0.9);
-        this.dropMeat(GameConfig.CUTTER_MEAT, fish.node.worldPosition);
+        const burst = new Vec3(cfp.x + (Math.random() - 0.5) * 3, cfp.y + 1.3, cfp.z + (Math.random() - 0.5) * 0.8);
+        this.spawnFx(this.hitFx, burst, 0.9);
+        this.dropMeat(GameConfig.CUTTER_MEAT, burst); // 肉从血雾处蹦出
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }
 

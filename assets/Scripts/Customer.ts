@@ -70,6 +70,12 @@ export class Customer extends Component {
         }
     }
 
+    /** 面向某个方向（初始排队面向售卖窗用） */
+    faceDir(dx: number, dz: number) {
+        if (!this.modelNode) return;
+        this.modelNode.setRotationFromEuler(0, Math.atan2(dx, dz) * 180 / Math.PI, 0);
+    }
+
     /** 朝 targetPos 移动，到位返回 true；行走时带颠步 */
     stepToTarget(dt: number): boolean {
         const pos = this.node.worldPosition.clone();
@@ -78,7 +84,9 @@ export class Customer extends Component {
         to.y = 0;
         const dist = to.length();
         const move = this._speed * dt;
-        if (dist <= move) {
+        // 到位阈值取 max(单帧步长, 0.06)：帧率抖动时避免在临界距离上永远差一步、
+        // 站在队位却持续播 walk 的边界病
+        if (dist <= Math.max(move, 0.06)) {
             this.node.setWorldPosition(this.targetPos);
             if (this._animator) this._animator.play('idle', true);
             else if (this.modelNode) this.modelNode.setPosition(0, 0, 0);

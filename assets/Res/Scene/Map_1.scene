@@ -62632,9 +62632,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -0.6,
+      "x": -1.1,
       "y": 0,
-      "z": -5.8
+      "z": -5.9
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -62695,9 +62695,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 1,
+      "x": 1.3,
       "y": 0,
-      "z": -5.8
+      "z": -5.7
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -62758,9 +62758,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 1.8,
+      "x": 1.4,
       "y": 0,
-      "z": -4.6
+      "z": -4.3
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -65790,7 +65790,7 @@
       "__id__": 5227
     },
     "initCount": 6,
-    "gapPx": 93,
+    "gapPx": 55,
     "cameraNode": {
       "__id__": 6
     },

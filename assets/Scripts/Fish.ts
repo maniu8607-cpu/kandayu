@@ -210,7 +210,9 @@ export class Fish extends Component {
             // 河豚有膨胀 clip：受击播一次膨胀（已进眩晕态则保持眩晕循环）
             // 已在撞桩眩晕状态就保持眩晕，不被受击膨胀打断
             if (!this._barrierPlayed) this._animator.play('action', false);
-            this.flashRed();
+            // 竞品口径：主角砍鱼不红闪（鱼保持原色+伤口），红色只属于切割机的持续染红。
+            // 0.35s/刀+0.15s 红闪会让鱼 40% 时间是红的，玩家看着就是「一直红」
+            if (this._sustainRed) this.flashRed();
             return;
         }
         if (!this.modelNode) return;
@@ -221,7 +223,7 @@ export class Fish extends Component {
             .to(0.05, { scale: new Vec3(s.x * grow * 1.12, s.y * grow * 0.9, s.z * grow * 1.12) })
             .to(0.1, { scale: new Vec3(s.x * grow, s.y * grow, s.z * grow) })
             .start();
-        this.flashRed();
+        if (this._sustainRed) this.flashRed();
     }
 
     @property({ tooltip: '切割机伤口上限（密集感）' }) maxWounds = 9;
@@ -293,9 +295,9 @@ export class Fish extends Component {
         // 注意两张图的角色：hpbar_fill.png 是黑色条(做底槽)、hpbar_bg.png 是红色条(做血量)，
         // 和文件名语义相反——按名字直觉用会得到一根黑血条
         const W = Fish.BAR_W;
-        // 底框白色（契约图 hpbar_frame，暂缺回退白色块）；血量条=红色条贴图
-        Skin.uprightQuad(root, W + 0.5, 0.66, 'hpbar_frame', new Color(250, 250, 250));
-        this._barFill = Skin.uprightQuad(root, W, 0.45, 'hpbar_bg', new Color(230, 60, 50));
+        // 竞品样式：红条=剩余血量，右端露出的深色段=已损血量（黑条图做底），底比填充大一圈当描边
+        Skin.uprightQuad(root, W + 0.12, 0.56, 'hpbar_fill', new Color(55, 18, 18));
+        this._barFill = Skin.uprightQuad(root, W, 0.46, 'hpbar_bg', new Color(230, 60, 50));
         this._barFill.setPosition(0, 0, 0.02); // 微凸向相机,压住底板
         this._barRoot = root;
     }

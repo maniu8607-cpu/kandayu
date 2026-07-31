@@ -22,8 +22,8 @@ export class CustomerQueue extends Component {
     customerTemplate: Node = null!;
     @property({ tooltip: '初始队列人数' })
     initCount = 6;
-    @property({ tooltip: '队内间距(px)' })
-    gapPx = 93;
+    @property({ tooltip: '队内间距(px)。竞品约一个身位（55≈1.4u），93 会拉得稀稀拉拉' })
+    gapPx = 55;
 
     private _list: Customer[] = [];
 
@@ -33,13 +33,16 @@ export class CustomerQueue extends Component {
     }
 
     init() {
+        const d = this.queueDir();
         for (let i = 0; i < this.initCount; i++) {
             const c = this.spawn();
-            // 初始队列直接站好
+            // 初始队列直接站好，并面向队首方向（售卖窗）——
+            // 瞬移站位不经过行走，不设朝向就是模型默认脸冲镜头
             if (c) {
                 this.assignTarget(c, i);
                 c.node.setWorldPosition(c.targetPos);
                 c.state = CustomerState.Queue;
+                c.faceDir(-d.x, -d.z);
             }
         }
     }
