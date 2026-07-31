@@ -427,20 +427,49 @@ export class Game extends Component {
         this._chopTimer += dt;
         if (this._chopTimer < GameConfig.ATTACK_INTERVAL) return;
         this._chopTimer = 0;
-        // 伤口落在主角砍击的一侧（砍哪伤哪）
-        const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
+        // 竞品打击感：刀从手里飞出去、砍在鱼眼位置、命中瞬间才结算伤害/特效/掉肉
         AudioMgr.play('chop', 1, 120);
         this.playChopSwing(fish.node.worldPosition);
-        // 血特效打在鱼身上表面（朝主角一侧），比打在几何中心更看得见
-        const fp = fish.node.worldPosition;
-        const pp = this.player.node.worldPosition;
-        const dx = pp.x - fp.x, dz = pp.z - fp.z;
-        const dl = Math.hypot(dx, dz) || 1;
-        this.spawnFx(this.hitFx, new Vec3(fp.x + dx / dl * 1.2, fp.y + 1.0, fp.z + dz / dl * 1.2), 0.9);
-        this.dropMeat(GameConfig.MEAT_PER_CHOP, fish.node.worldPosition);
-        if (dead) {
-            fish.playDie(() => this.fishLane.removeFish(fish.node));
+        const eye = fish.getEyeWorld();
+        this.throwKnife(eye, () => {
+            if (!fish.isValid || !fish.alive) return;
+            const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
+            this.spawnFx(this.hitFx, eye, 0.9);
+            this.dropMeat(GameConfig.MEAT_PER_CHOP, fish.node.worldPosition);
+            if (dead) {
+                fish.playDie(() => this.fishLane.removeFish(fish.node));
+            }
+        });
+    }
+
+    private _flyKnife: Node | null = null;
+
+    /** 飞刀：手刀隐掉，克隆体旋转着飞到目标点（鱼眼）命中回调，再飞回手上 */
+    private throwKnife(toWorld: Vec3, onHit: () => void) {
+        const hand = this.player?.knifeNode;
+        if (!hand || !hand.isValid) { onHit(); return; }
+        if (!this._flyKnife || !this._flyKnife.isValid) {
+            this._flyKnife = instantiate(hand);
+            this._flyKnife.name = 'FlyKnife';
+            this._flyKnife.setParent(this.flyLayer);
+            // 高速飞行中小刀看不清，放大一档
+            this._flyKnife.setScale(1.7, 1.7, 1.7);
+            this._flyKnife.active = false;
         }
+        const fk = this._flyKnife;
+        const from = hand.worldPosition.clone();
+        hand.active = false;
+        fk.active = true;
+        fk.setWorldPosition(from);
+        fk.setRotationFromEuler(0, 0, 0);
+        tween(fk)
+            .to(0.09, { worldPosition: toWorld })
+            .call(() => onHit())
+            .to(0.1, { worldPosition: from })
+            .call(() => { fk.active = false; if (hand.isValid) hand.active = true; })
+            .start();
+        // 纵向翻滚劈砍
+        tween(fk).by(0.19, { eulerAngles: new Vec3(-360, 0, 0) }).start();
     }
 
     @property({ tooltip: '特效整体缩放（kdy 特效包与本图尺度不一时调）' }) fxScale = 1;

@@ -143,8 +143,17 @@ export class Fish extends Component {
                 .filter(r => !r.node.name.startsWith('quad_')); // 重采渲染器,受击变红作用到新模型
         }
         if (this._animator && this._animator.has('action')) {
-            this._animator.play('action', false);
-            const dur = 0.9;
+            // 膨胀 clip 幅度小：放慢 0.55 倍拉长演出，再叠一层整体缩放脉冲放大「变大感」，
+            // 眩晕衔接也顺势拖长（用户反馈原版膨胀太小、撞晕衔接太短）
+            this._animator.play('action', false, 0.55);
+            if (this.modelNode) {
+                const b = this._baseScale;
+                tween(this.modelNode)
+                    .to(0.3, { scale: new Vec3(b.x * 1.35, b.y * 1.2, b.z * 1.35) }, { easing: 'backOut' })
+                    .to(0.9, { scale: new Vec3(b.x, b.y, b.z) })
+                    .start();
+            }
+            const dur = 1.7;
             this.scheduleOnce(() => {
                 // force：膨胀是一次性动作,不 force 的话眩晕循环会被 oneShot 闸掉
                 if (this.alive && this._animator && this._animator.has('stun')) this._animator.play('stun', true, 1, true);
@@ -180,7 +189,8 @@ export class Fish extends Component {
         this.hp -= damage;
         this.updateBloodBar();
         this.playHitFeedback();
-        this.spawnWound(fromWorld, sustainRed ? 3 : 1);
+        // 竞品口径：主角砍=鱼眼一道划痕；切割机=三道爪痕（明显更多）
+        if (sustainRed) this.spawnCutterWounds(); else this.spawnEyeWound();
         const ratio = this.hp / GameConfig.FISH_HP;
         if (this.hp <= 0) {
             this.state = FishState.Dead;
@@ -217,27 +227,42 @@ export class Fish extends Component {
     @property({ tooltip: '最多显示几处伤口' }) maxWounds = 3;
     private _wounds = 0;
 
-    /** 每刀在鱼身留一处伤痕（贴 wound.png），最多 maxWounds 处 */
-    private spawnWound(fromWorld?: Vec3, count = 1) {
-        // 「砍哪伤哪」：有砍击来源时把来源投到鱼局部、钳在身体范围内；切割机三刀片沿身长铺三道。
-        // 注意 host(modelNode) 带 8 倍缩放且鱼体下沉：y 要抬到背脊高度(local 0.5≈世界2.8)，否则埋在水面下
+    private _eyeWound = false;
+
+    /** 鱼眼位置（世界坐标）：主角飞刀的落点。
+     *  实测模型局部轴：身长沿 local z（+z=头端），local x 是身宽，别按直觉用 x 当身长 */
+    getEyeWorld(out?: Vec3): Vec3 {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
-        for (let i = 0; i < count && this._wounds < this.maxWounds; i++) {
+        const v = out ?? new Vec3();
+        v.set(0.05, 0.35, 0.42);
+        Vec3.transformMat4(v, v, host.worldMatrix);
+        return v;
+    }
+
+    /** 主角砍：鱼眼位置一道划痕（竞品飞刀砍头样式），只留一道不累计 */
+    private spawnEyeWound() {
+        if (this._eyeWound) return;
+        this._eyeWound = true;
+        const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
+        const w = new Node('woundEye');
+        w.setParent(host);
+        // host 带 8 倍缩放且鱼体下沉：y 要在背脊高度，否则埋在水下；头端=local +z
+        w.setPosition(0.06, 0.42, 0.40);
+        w.setRotationFromEuler(0, 15, 0);
+        const q = Skin.groundQuad(w, 0.34, 0.07, 'wound_single', new Color(150, 20, 20), 235);
+        q.setPosition(0, 0, 0);
+    }
+
+    /** 切割机：一次铺满三道爪痕沿身长均布（和主角的单道明显区分） */
+    private spawnCutterWounds() {
+        const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
+        while (this._wounds < this.maxWounds) {
             this._wounds++;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            let lx = (Math.random() - 0.5) * 0.5;
-            let lz = (Math.random() - 0.5) * 0.18;
-            if (fromWorld) {
-                const lp = new Vec3();
-                host.inverseTransformPoint(lp, fromWorld);
-                // 同一站位连续砍时投影点相同，三道伤口会叠成一道——按序号沿身长展开
-                const spread = [0, -0.17, 0.17][(this._wounds - 1) % 3];
-                lx = Math.max(-0.4, Math.min(0.4, lp.x + spread + (Math.random() - 0.5) * 0.05));
-                lz = Math.max(-0.15, Math.min(0.15, lp.z)) + (Math.random() - 0.5) * 0.07;
-            }
-            if (count > 1) lx = -0.3 + 0.3 * ((this._wounds - 1) % 3); // 三刀片沿身长均布
-            w.setPosition(lx, 0.5, lz);
+            // 沿身长(local z)均布，x 是身宽只留小抖动
+            const lz = -0.25 + 0.25 * ((this._wounds - 1) % 3);
+            w.setPosition((Math.random() - 0.5) * 0.12, 0.5, lz);
             w.setRotationFromEuler(0, Math.random() * 360, 0);
             // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
             const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);
@@ -323,6 +348,7 @@ export class Fish extends Component {
         this._barrierPlayed = false;
         this._sustainRed = false;
         if (this._bloodPool && this._bloodPool.isValid) { this._bloodPool.destroy(); this._bloodPool = null; }
+        this._eyeWound = false;
         // modelNode 可能在 onLoad 之后才被注入（运行时生成的骨骼模型），
         // 那时才第一次取基准缩放；否则会把 Animator 设好的缩放打回 1。
         if (this.modelNode && !this._baseCaptured) {

@@ -147,6 +147,8 @@ export class PlayerController extends Component {
     private _bobTime = 0;
 
     private _knife: Node | null = null;
+    /** 手上的刀节点（Game 的飞刀砍击要临时藏手刀、克隆飞行体） */
+    get knifeNode() { return this._knife; }
 
     /** 手持菜刀（竞品渔夫持刀挥砍）：挂在右手骨上随动作走。模型包没有刀网格，程序拼一把 */
     private ensureKnife() {
