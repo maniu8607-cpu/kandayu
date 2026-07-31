@@ -236,7 +236,8 @@ export class Fish extends Component {
     getEyeWorld(out?: Vec3): Vec3 {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const v = out ?? new Vec3();
-        v.set(0.05, 0.35, 0.42);
+        // 三色标记法标定：X 眼实际在 local (0.15, 0.32, 0.28) 附近，别用头尖 z0.42
+        v.set(0.15, 0.32, 0.30);
         Vec3.transformMat4(v, v, host.worldMatrix);
         return v;
     }
@@ -248,8 +249,8 @@ export class Fish extends Component {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const w = new Node('woundEye');
         w.setParent(host);
-        // host 带 8 倍缩放且鱼体下沉：y 要在背脊高度，否则埋在水下；头端=local +z
-        w.setPosition(0.06, 0.42, 0.40);
+        // 眼位经三色标记法标定 (0.15,0.32,0.28)；划痕略偏嘴侧、y 抬到头面弧线上露出
+        w.setPosition(0.15, 0.36, 0.30);
         w.setRotationFromEuler(0, 15, 0);
         const q = Skin.groundQuad(w, 0.34, 0.07, 'wound_single', new Color(150, 20, 20), 235);
         q.setPosition(0, 0, 0);
