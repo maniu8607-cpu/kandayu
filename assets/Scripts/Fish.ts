@@ -39,6 +39,10 @@ export class Fish extends Component {
     stunClip: AnimationClip = null!;
     /** 晕版模型（X 眼那版，撞桩瞬间换上；游动期是睁眼正常版）。FishLane 注入 */
     stunSkin: any = null;
+    /** 主角挥砍取肉点（模型局部：x=身宽 y=高 z=身长+z头端）。FishLane 注入，决定飞刀落点/伤痕/血雾/出肉 */
+    chopPoint = new Vec3(0.08, 0.45, 0.05);
+    /** 机器砍取肉点（模型局部）。FishLane 注入，决定三道伤痕簇/血雾/出肉 */
+    cutterPoint = new Vec3(0.08, 0.45, -0.15);
 
     private _baseCaptured = false;
 
@@ -232,16 +236,19 @@ export class Fish extends Component {
 
     private _eyeWound = false;
 
-    /** 鱼眼位置（世界坐标）：主角飞刀的落点。
-     *  实测模型局部轴：身长沿 local z（+z=头端），local x 是身宽，别按直觉用 x 当身长 */
-    getEyeWorld(out?: Vec3): Vec3 {
+    /** 局部取肉点 → 世界坐标（轴向备忘：身长沿 local z、+z=头端；X 眼在 (0.15,0.32,0.28) 附近） */
+    private pointToWorld(local: Vec3, out?: Vec3): Vec3 {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const v = out ?? new Vec3();
-        // 三色标记法标定：X 眼实际在 local (0.15, 0.32, 0.28) 附近，别用头尖 z0.42
-        v.set(0.15, 0.32, 0.30);
+        v.set(local.x, local.y, local.z);
         Vec3.transformMat4(v, v, host.worldMatrix);
         return v;
     }
+
+    /** 主角挥砍取肉点（世界）：飞刀落点/伤痕/血雾/出肉都对齐这里 */
+    getChopPointWorld(out?: Vec3): Vec3 { return this.pointToWorld(this.chopPoint, out); }
+    /** 机器砍取肉点（世界） */
+    getCutterPointWorld(out?: Vec3): Vec3 { return this.pointToWorld(this.cutterPoint, out); }
 
     /** 主角砍：鱼眼位置一道划痕（竞品飞刀砍头样式），只留一道不累计 */
     private spawnEyeWound() {
@@ -250,28 +257,22 @@ export class Fish extends Component {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const w = new Node('woundEye');
         w.setParent(host);
-        // 用户拍板：伤口不贴眼睛，往后放在身体中段背部（飞刀/血雾落点仍在眼区）
-        w.setPosition(0.08, 0.5, -0.02);
+        // 伤痕贴在主角取肉点上（FishLane Inspector 可调），y 略抬防止埋进背脊
+        w.setPosition(this.chopPoint.x, Math.max(this.chopPoint.y, 0.42), this.chopPoint.z);
         w.setRotationFromEuler(0, 25, 0);
         const q = Skin.groundQuad(w, 0.2, 0.07, 'wound_single', new Color(150, 20, 20), 235);
         q.setPosition(0, 0, 0);
     }
 
-    /** 切割机：伤痕聚集在刀砍到的位置（把刀口世界坐标投到鱼局部），两三道成簇 */
+    /** 切割机：伤痕聚集在机器取肉点（FishLane Inspector 可调），两三道成簇 */
     private spawnCutterWounds(fromWorld?: Vec3) {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
-        let cz = 0.1, cx = 0;
-        if (fromWorld) {
-            const lp = new Vec3();
-            host.inverseTransformPoint(lp, fromWorld);
-            cz = Math.max(-0.38, Math.min(0.38, lp.z)); // 身长=local z
-            cx = Math.max(-0.1, Math.min(0.1, lp.x));   // 身宽小幅
-        }
+        const cz = this.cutterPoint.z, cx = this.cutterPoint.x;
         for (let i = 0; i < 3 && this._wounds < this.maxWounds; i++) {
             this._wounds++;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            w.setPosition(cx + (Math.random() - 0.5) * 0.08, 0.45, cz + [-0.11, 0, 0.11][i % 3] + (Math.random() - 0.5) * 0.04);
+            w.setPosition(cx + (Math.random() - 0.5) * 0.08, Math.max(this.cutterPoint.y, 0.42), cz + [-0.11, 0, 0.11][i % 3] + (Math.random() - 0.5) * 0.04);
             w.setRotationFromEuler(0, 60 + Math.random() * 60, 0);
             // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
             const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);

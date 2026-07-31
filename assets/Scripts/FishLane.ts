@@ -31,6 +31,10 @@ export class FishLane extends Component {
     @property({ type: AnimationClip, tooltip: '鱼-死亡动画' }) clipDie: AnimationClip = null!;
     @property({ type: Prefab, tooltip: '晕版鱼皮（X 眼那版）：撞桩瞬间从正常版切过去，留空不切换' })
     stunSkinPrefab: Prefab = null!;
+    @property({ tooltip: '主角挥砍取肉点（鱼模型局部坐标：x=身宽 y=高 z=身长且+z=头端）。飞刀落点/伤痕/血雾/出肉都对齐这里' })
+    chopPointLocal = new Vec3(0.08, 0.45, 0.05);
+    @property({ tooltip: '机器砍取肉点（鱼模型局部坐标，轴向同上）。三道伤痕簇/血雾/出肉对齐这里' })
+    cutterPointLocal = new Vec3(0.08, 0.45, -0.15);
     @property({ type: Node, tooltip: '木桩节点（拦截点自动贴合它，留空则用 blockPoint）' })
     barrierNode: Node = null!;
     @property({ tooltip: '队首鱼停在木桩前多远(世界单位)：约等于半个鱼身,让鱼头正好顶住桩' })
@@ -140,6 +144,8 @@ export class FishLane extends Component {
         }
         f.stunClip = this.clipStun;
         f.stunSkin = this.stunSkinPrefab;
+        f.chopPoint.set(this.chopPointLocal);
+        f.cutterPoint.set(this.cutterPointLocal);
         f.skinTex = this.clipSwim ? this.skinTex + '_sk' : this.skinTex;
         if (!this.clipSwim) Skin.apply(n, this.skinTex);
         f.reinit();

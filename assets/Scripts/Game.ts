@@ -440,7 +440,7 @@ export class Game extends Component {
         // 竞品打击感：刀从手里飞出去、砍在鱼眼位置、命中瞬间才结算伤害/特效/掉肉
         AudioMgr.play('chop', 1, 120);
         this.playChopSwing(fish.node.worldPosition);
-        const eye = fish.getEyeWorld();
+        const eye = fish.getChopPointWorld();
         this.throwKnife(eye, () => {
             if (!fish.isValid || !fish.alive) return;
             const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
@@ -928,10 +928,9 @@ export class Game extends Component {
         // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊+三道伤口+每刀血雾，视觉冲击的核心
         const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true, this._cutterNode?.worldPosition);
         // 每刀血雾：位置沿鱼身随机撒，密集切割感（拦停鱼身长沿世界 x）
-        // 血雾/血滴/出肉都聚在刀口接触带（切割机与鱼身之间），不再全身乱撒；量也收敛
-        const cfp = fish.node.worldPosition;
-        const ctp = this._cutterNode && this._cutterNode.isValid ? this._cutterNode.worldPosition : cfp;
-        const burst = new Vec3((cfp.x + ctp.x) / 2 + (Math.random() - 0.5) * 0.4, cfp.y + 1.2, (cfp.z + ctp.z) / 2);
+        // 血雾/血滴/出肉聚在「机器取肉点」（FishLane Inspector 可调）
+        const burst = fish.getCutterPointWorld();
+        burst.x += (Math.random() - 0.5) * 0.4;
         this.spawnFx(this.hitFx, burst, 0.9);
         this.spawnBloodSplats(burst, 4, 0.7, 0.7);
         this.dropMeat(GameConfig.CUTTER_MEAT, burst); // 肉从刀口处蹦出
