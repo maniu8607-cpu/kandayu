@@ -435,13 +435,37 @@ export class Game extends Component {
         this.throwKnife(eye, () => {
             if (!fish.isValid || !fish.alive) return;
             const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
-            // 竞品出肉演出：血雾炸在伤口上，肉从伤口位置蹦出来再飞进肉堆
+            // 竞品出肉演出：血雾+一圈血滴炸在伤口上，肉从伤口位置蹦出来再飞进肉堆
             this.spawnFx(this.hitFx, eye, 0.9);
+            this.spawnBloodSplats(eye, 7);
             this.dropMeat(GameConfig.MEAT_PER_CHOP, eye);
             if (dead) {
                 fish.playDie(() => this.fishLane.removeFish(fish.node));
             }
         });
+    }
+
+    /** 竞品出肉演出：伤口处一圈鲜红血滴向外炸开、驻留片刻再缩没（血雾粒子之外的实体血点层） */
+    private spawnBloodSplats(atWorld: Vec3, count = 7) {
+        for (let i = 0; i < count; i++) {
+            const n = new Node('bloodSplat');
+            n.setParent(this.flyLayer);
+            const q = Skin.groundQuad(n, 1, 1, 'blood_splat', new Color(220, 30, 30), 220);
+            q.setPosition(0, 0, 0);
+            n.setWorldPosition(atWorld.x, atWorld.y + 0.06, atWorld.z);
+            n.setScale(0.08, 0.08, 0.08);
+            n.setRotationFromEuler(0, Math.random() * 360, 0);
+            const ang = Math.random() * Math.PI * 2;
+            const r = 0.3 + Math.random() * 1.5;
+            const s = 0.22 + Math.random() * 0.45;
+            const to = new Vec3(atWorld.x + Math.cos(ang) * r, atWorld.y + 0.06, atWorld.z + Math.sin(ang) * r * 0.7);
+            tween(n)
+                .to(0.12, { worldPosition: to, scale: new Vec3(s, s, s) })
+                .delay(0.3 + Math.random() * 0.35)
+                .to(0.15, { scale: new Vec3(0.02, 0.02, 0.02) })
+                .call(() => { if (n.isValid) n.destroy(); })
+                .start();
+        }
     }
 
     private _flyKnife: Node | null = null;
@@ -532,7 +556,8 @@ export class Game extends Component {
             const m = instantiate(this.rawMeatPrefab);
             Skin.apply(m, 'T_yu_BC'); // 静态肉模型的 FBX 材质不带贴图，不套皮是白模
             m.setParent(this.flyLayer);
-            m.setWorldPosition(fromWorld);
+            // 出生点在伤口周围小范围散开，多块肉读作「成簇蹦出」（竞品样式）
+            m.setWorldPosition(fromWorld.x + (Math.random() - 0.5) * 0.5, fromWorld.y, fromWorld.z + (Math.random() - 0.5) * 0.4);
             // 用户拍板：整齐码放——固定 6 槽网格循环、每 6 块升一层、统一朝向（不再随机散布）
             const c = this.meatDropCenter.worldPosition;
             const slot = Game.MEAT_SLOTS[this._meatDropIndex % Game.MEAT_SLOTS.length];
@@ -860,6 +885,7 @@ export class Game extends Component {
         const cfp = fish.node.worldPosition;
         const burst = new Vec3(cfp.x + (Math.random() - 0.5) * 3, cfp.y + 1.3, cfp.z + (Math.random() - 0.5) * 0.8);
         this.spawnFx(this.hitFx, burst, 0.9);
+        this.spawnBloodSplats(burst, 9);
         this.dropMeat(GameConfig.CUTTER_MEAT, burst); // 肉从血雾处蹦出
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }
