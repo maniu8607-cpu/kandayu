@@ -851,8 +851,9 @@ export class Game extends Component {
         }
         // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊+三道伤口+每刀血雾，视觉冲击的核心
         const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true, this._cutterNode?.worldPosition);
+        // 每刀血雾：位置沿鱼身随机撒，密集切割感（拦停鱼身长沿世界 x）
         const cfp = fish.node.worldPosition;
-        this.spawnFx(this.hitFx, new Vec3(cfp.x, cfp.y + 1.4, cfp.z), 0.9);
+        this.spawnFx(this.hitFx, new Vec3(cfp.x + (Math.random() - 0.5) * 3, cfp.y + 1.3, cfp.z + (Math.random() - 0.5) * 0.8), 0.9);
         this.dropMeat(GameConfig.CUTTER_MEAT, fish.node.worldPosition);
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }

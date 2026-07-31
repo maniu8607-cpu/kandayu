@@ -147,10 +147,10 @@ export class Fish extends Component {
             // 眩晕衔接也顺势拖长（用户反馈原版膨胀太小、撞晕衔接太短）
             this._animator.play('action', false, 0.55);
             if (this.modelNode) {
+                // 用户拍板：撞晕变大后保持这个体型不变回去（死亡/回收时 reinit 恢复基准）
                 const b = this._baseScale;
                 tween(this.modelNode)
-                    .to(0.3, { scale: new Vec3(b.x * 1.35, b.y * 1.2, b.z * 1.35) }, { easing: 'backOut' })
-                    .to(0.9, { scale: new Vec3(b.x, b.y, b.z) })
+                    .to(0.35, { scale: new Vec3(b.x * 1.32, b.y * 1.18, b.z * 1.32) }, { easing: 'backOut' })
                     .start();
             }
             const dur = 1.7;
@@ -224,7 +224,7 @@ export class Fish extends Component {
         this.flashRed();
     }
 
-    @property({ tooltip: '最多显示几处伤口' }) maxWounds = 3;
+    @property({ tooltip: '切割机伤口上限（密集感）' }) maxWounds = 9;
     private _wounds = 0;
 
     private _eyeWound = false;
@@ -253,16 +253,15 @@ export class Fish extends Component {
         q.setPosition(0, 0, 0);
     }
 
-    /** 切割机：一次铺满三道爪痕沿身长均布（和主角的单道明显区分） */
+    /** 切割机：每刀新增 3 道爪痕，沿身长随机密布直到 maxWounds（密集感，和主角单道明显区分） */
     private spawnCutterWounds() {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
-        while (this._wounds < this.maxWounds) {
+        for (let i = 0; i < 3 && this._wounds < this.maxWounds; i++) {
             this._wounds++;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            // 沿身长(local z)均布，x 是身宽只留小抖动
-            const lz = -0.25 + 0.25 * ((this._wounds - 1) % 3);
-            w.setPosition((Math.random() - 0.5) * 0.12, 0.5, lz);
+            // 沿身长(local z)随机密布，x 是身宽小幅抖动
+            w.setPosition((Math.random() - 0.5) * 0.16, 0.5, (Math.random() - 0.5) * 0.72);
             w.setRotationFromEuler(0, Math.random() * 360, 0);
             // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
             const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);
