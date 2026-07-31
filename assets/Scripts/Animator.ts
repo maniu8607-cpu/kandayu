@@ -137,6 +137,21 @@ export class Animator extends Component {
         }
     }
 
+    /** 强制从头重播。节点未激活时 play 会被引擎静默丢弃（state 不启动），
+     *  「先配置后入树」组装的对象入树后必须用这个重踢（普通 play 会被同名去重挡住） */
+    restart(key: string, loop = true, speed = 1) {
+        if (!this._anim) return;
+        this._anim.resume();
+        const mapped = this._names[key] || Object.values(this._names)[0];
+        if (!mapped) return;
+        this._cur = mapped;
+        this._oneShot = false;
+        const st = this._anim.getState(mapped);
+        if (st) { st.speed = speed; st.wrapMode = loop ? 2 : 1; }
+        this._anim.stop();
+        this._anim.play(mapped);
+    }
+
     /** 当前是否有该动作 */
     has(key: string) { return !!this._names[key]; }
     get current() { return this._cur; }

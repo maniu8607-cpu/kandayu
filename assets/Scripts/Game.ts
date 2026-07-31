@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget, Material, MeshRenderer } from 'cc';
+import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget, Material, MeshRenderer, AnimationClip } from 'cc';
 import { GameConfig } from './GameConfig';
 import { PlayerController } from './PlayerController';
 import { Backpack, CarryType } from './Backpack';
@@ -51,6 +51,10 @@ export class Game extends Component {
     @property({ type: Prefab }) woodPrefab: Prefab = null!;
     @property({ type: Prefab }) rawMeatPrefab: Prefab = null!;
     @property({ type: Prefab }) coinPrefab: Prefab = null!;
+
+    // —— 切割机蒙皮动画（刀_Skin=整机蒙皮模型，刀_切割=三刀交错劈砍 clip）——
+    @property({ type: Prefab, tooltip: '切割机蒙皮模型（刀_Skin.prefab 子资产）' }) cutterSkinPrefab: Prefab = null!;
+    @property({ type: AnimationClip, tooltip: '切割动画（刀_切割 clip）' }) cutterCutClip: AnimationClip = null!;
 
     // —— 特效（kdy_fx 包）——
     @property({ type: Prefab, tooltip: '砍中血特效' }) hitFx: Prefab = null!;
@@ -476,6 +480,32 @@ export class Game extends Component {
 
     private _jixieBaseY: number | null = null;
     private _flyKnife: Node | null = null;
+    private _cutterRig: Animator | null = null;
+
+    /** 切割机换蒙皮版：静态 jixie 隐掉，刀_Skin（同模型蒙皮版）+ 刀_切割 clip 三刀交错劈砍。
+     *  组装走「先配置后入树」仪式——节点已 active 时 addComponent 的 start 会抢跑空初始化 */
+    private ensureCutterRig() {
+        if (this._cutterRig || !this.cutterSkinPrefab || !this.cutterCutClip || !this._cutterNode) return;
+        const host = new Node('CutterRig');
+        const an = host.addComponent(Animator);
+        an.autoBuild = false;
+        an.skinPrefab = this.cutterSkinPrefab;
+        an.clipAction = this.cutterCutClip;
+        an.build(); // build 结尾会用第一个可用 clip 循环播放=机器持续运转
+        const jx = this._cutterNode.getChildByName('jixie');
+        host.setParent(this._cutterNode);
+        if (jx) {
+            host.setPosition(jx.position);
+            host.setWorldRotation(jx.worldRotation);
+            host.setScale(jx.scale);
+            jx.active = false; // 静态死体让位给蒙皮版
+        } else {
+            host.setPosition(0, 0, 0);
+        }
+        this._cutterRig = an;
+        // 未入树时 build 里的 play 被引擎丢弃，入树后下一帧重踢才真正开转
+        this.scheduleOnce(() => an.restart('action'), 0);
+    }
 
     /** 飞刀：手刀隐掉，克隆体旋转着飞到目标点（鱼眼）命中回调，再飞回手上 */
     private throwKnife(toWorld: Vec3, onHit: () => void) {
@@ -739,7 +769,7 @@ export class Game extends Component {
         }
         switch (p.plateId) {
             case 'buyHelper': this._helperOn = true; this._helperNode = unlock; AudioMgr.play('unlock_device'); break;
-            case 'buyCutter': this._cutterOn = true; this._cutterNode = unlock; this._cutterBaseY = unlock.position.y; AudioMgr.play('unlock_device'); break;
+            case 'buyCutter': this._cutterOn = true; this._cutterNode = unlock; this._cutterBaseY = unlock.position.y; this.ensureCutterRig(); AudioMgr.play('unlock_device'); break;
             case 'buyBelt': this._beltOn = true; AudioMgr.play('unlock_device'); break;
             case 'expand': AudioMgr.play('unlock_area'); this.onExpand(); return;
         }
@@ -883,14 +913,12 @@ export class Game extends Component {
         this._cutterTimer += dt;
         if (this._cutterTimer < GameConfig.ATTACK_INTERVAL) return;
         this._cutterTimer = 0;
-        // 三刀刃上下砍（用户拍板：不要旋转摇摆）。三刀片烘死在 jixie 单网格里，
-        // 整排刀快速下压回弹=三刀齐砍；三刀交错独立起落需模型拆件（美术台账挂着）
-        if (this._cutterNode && this._cutterNode.isValid) {
+        // 蒙皮切割机（刀_Skin+刀_切割）已接管三刀交错劈砍，这里只兜底：没配蒙皮资产时退回整排下压
+        if (!this._cutterRig && this._cutterNode && this._cutterNode.isValid) {
             const jx = this._cutterNode.getChildByName('jixie');
             if (jx) {
                 if (this._jixieBaseY === null) this._jixieBaseY = jx.position.y;
                 const bx2 = jx.position.x, bz2 = jx.position.z;
-                jx.setRotationFromEuler(0, 0, 0);
                 tween(jx)
                     .to(0.06, { position: new Vec3(bx2, this._jixieBaseY - 0.65, bz2) })
                     .to(0.12, { position: new Vec3(bx2, this._jixieBaseY, bz2) })

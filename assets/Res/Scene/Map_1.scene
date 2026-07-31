@@ -65930,6 +65930,7 @@
     },
     "initCount": 6,
     "gapPx": 55,
+    "leaveLaneOffset": 1.1,
     "cameraNode": {
       "__id__": 6
     },
@@ -66327,6 +66328,14 @@
     "coinPrefab": {
       "__uuid__": "3ed7e81f-d0e6-47e3-b53f-4edb0366fea2@454c9",
       "__expectedType__": "cc.Prefab"
+    },
+    "cutterSkinPrefab": {
+      "__uuid__": "4775956a-4b3b-4a9d-ad92-68021e20fe61@54ea1",
+      "__expectedType__": "cc.Prefab"
+    },
+    "cutterCutClip": {
+      "__uuid__": "9b1cfd65-1609-4be5-8505-ab489e221709@73b7f",
+      "__expectedType__": "cc.AnimationClip"
     },
     "hitFx": {
       "__uuid__": "71f66e88-f30f-405f-b9d5-55baca7061db",
