@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget, Material, MeshRenderer, AnimationClip } from 'cc';
+import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Tween, Label, ParticleSystem, director, Color, Widget, Material, MeshRenderer, AnimationClip } from 'cc';
 import { GameConfig } from './GameConfig';
 import { PlayerController } from './PlayerController';
 import { Backpack, CarryType } from './Backpack';
@@ -184,6 +184,7 @@ export class Game extends Component {
         Skin.getMat('jinibi_2', () => { });
         // 引导目标先指向第一块地贴（未拖动前就显示）
         this.plates[0] && (this.plates[0].node.active = true);
+        if (this.debugPoseCutting) this.scheduleOnce(() => this.debugCutPoseSetup(), 1);
         // 首屏运镜（竞品 StartYD 0/1）：相机先看拦鱼区的鱼、驻留 introCamHold 秒，
         // 再靠跟随 lerp 自然拉回主角；玩家提前拖动则立即结束驻留
         if (this.cameraNode && this.fishLane?.blockPoint) {
@@ -225,6 +226,9 @@ export class Game extends Component {
         ov(this.tuneBagCoinMax, v => GameConfig.BAG_COIN_MAX = v);
         ov(this.tuneGroundMeatMax, v => GameConfig.GROUND_MEAT_MAX = v);
     }
+
+    @property({ group: '调试', tooltip: '【临时摆位用】预览自动快进到「木桩已建+鱼撞晕+主角切割了几刀」后全场冻结（渲染继续、逻辑/骨骼停），血滴伤痕留在原地供对照。调完位置记得关掉' })
+    debugPoseCutting = false;
 
     @property({ tooltip: '开场相机看鱼驻留秒数(竞品 2s)，0=关' }) introCamHold = 2;
     private _introHold = 0;
@@ -366,6 +370,7 @@ export class Game extends Component {
 
     update(dt: number) {
         if (this.state !== GameState.Play) return;
+        this.debugPollFreeze();
         this.updateIdleTip(dt);
         this.updateDragTipFollow();
         this.updatePlates(dt);
@@ -476,6 +481,55 @@ export class Game extends Component {
                 .call(() => { if (n.isValid) n.destroy(); })
                 .start();
         }
+    }
+
+    /** 【临时摆位】快进到撞晕+切割态：即时建桩→主角站砍鱼贴→等鱼撞晕挨4刀→冻结全场 */
+    private debugCutPoseSetup() {
+        this._introHold = 0;
+        if (!this._barrierDone) {
+            this._barrierDone = true;
+            const p0 = this.plates[0];
+            if (p0) { p0.done = true; p0.node.active = false; }
+            this.throwCarryWood();
+            this.revealBarrier(() => this.onWoodDone());
+        }
+        const chop = this.plates.find(p => p.plateId === 'chop');
+        if (chop) {
+            chop.node.active = true;
+            this.playerNode.setWorldPosition(chop.node.worldPosition);
+        }
+        // 轮询放 update 驱动——递归 scheduleOnce(同一回调) 会被调度器按 (target,callback) 去重吞链
+        this._debugArmed = true;
+    }
+
+    private _debugArmed = false;
+
+    /** update 里每帧查：鱼撞晕且挨了 4 刀 → 延迟 0.6s（让飞刀/血滴落定）冻结 */
+    private debugPollFreeze() {
+        if (!this._debugArmed) return;
+        const f = this.fishLane?.frontFish;
+        if (f && (f as any)._barrierPlayed && f.hp <= GameConfig.FISH_HP - GameConfig.HIT_DAMAGE * 4) {
+            this._debugArmed = false;
+            this.scheduleOnce(() => this.debugFreezeAll(), 0.6);
+        }
+    }
+
+    /** 冻结：逻辑组件全停、骨骼动画暂停、血滴/飞刀的补间停掉留在原地；渲染照常 */
+    private debugFreezeAll() {
+        this.state = GameState.Boot; // Game.update 早退
+        const stopComps = ['FishLane', 'CustomerQueue', 'ProcessLine', 'PlayerController', 'Fish', 'Customer', 'GuideArrow'];
+        director.getScene()?.walk(n => {
+            n.components.forEach((c: any) => {
+                const nm = c.constructor?.name ?? '';
+                if (stopComps.indexOf(nm) >= 0) c.enabled = false;
+                if (nm === 'SkeletalAnimation') { try { c.pause(); } catch (e) { } }
+            });
+            if (n.name === 'bloodSplat' || n.name === 'FlyKnife') Tween.stopAllByTarget(n);
+        });
+        if (this._flyKnife && this._flyKnife.isValid) this._flyKnife.active = false;
+        const hand = this.player?.knifeNode;
+        if (hand && hand.isValid) hand.active = true;
+        console.log('[debug] 已冻结在「鱼撞晕+主角切割」状态——摆位调好后把 Game 的 debugPoseCutting 关掉再存');
     }
 
     private _jixieBaseY: number | null = null;

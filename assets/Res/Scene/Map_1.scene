@@ -66415,6 +66415,7 @@
     "tuneBagMeatMax": 0,
     "tuneBagCoinMax": 0,
     "tuneGroundMeatMax": 0,
+    "debugPoseCutting": true,
     "introCamHold": 2,
     "fxScale": 1,
     "helperCarryMax": 10,
