@@ -26,6 +26,7 @@ export class CustomerQueue extends Component {
     gapPx = 55;
 
     private _list: Customer[] = [];
+    private _lastFront: Customer | null = null;
     /** 已成交离场中的顾客：从 _list 摘除后必须在这里继续驱动走位，
      *  否则会僵在队首原地循环最后的动画直到销毁（“排队却播 walk”的元凶之一） */
     private _leaving: Customer[] = [];
@@ -127,10 +128,14 @@ export class CustomerQueue extends Component {
                 c.targetPos.set(sp.x, sp.y, c.node.worldPosition.z);
             }
         });
+        // 新队首亮 2 秒饥饿气泡后收起（图标不常驻）
+        const front = this._list[0] ?? null;
+        if (front !== this._lastFront) {
+            this._lastFront = front;
+            if (front) front.flashBubble(2);
+        }
         // 排队列走位：进场顾客沿队列线直达队尾（队尾在最后，不会穿过任何人）
         this._list.forEach((c, i) => {
-            // 气泡只挂队首一人（竞品样式），全队都顶着图标太乱
-            c.showBubble(i === 0);
             if (c.state === CustomerState.Leave) { c.stepToTarget(dt); return; }
             this.assignTarget(c, i);
             const arrived = c.stepToTarget(dt);

@@ -102,8 +102,14 @@ export class Animator extends Component {
     private _oneShot = false;
 
     /** 播放；loop=false 时播完自动回 idle。force=true 强制打断一次性动作（切眩晕等） */
+    /** 定格当前姿态（撞晕后不再摇摆用）。之后任意 play() 会自动恢复 */
+    freeze() {
+        if (this._anim) this._anim.pause();
+    }
+
     play(key: string, loop = true, speed = 1, force = false) {
         if (!this._anim) return;
+        this._anim.resume(); // freeze 过的先恢复，幂等
         const mapped = this._names[key] || this._names['idle'] || Object.values(this._names)[0];
         if (!mapped) return;
         // 一次性动作（砍/膨胀）播完前不被循环请求打断——

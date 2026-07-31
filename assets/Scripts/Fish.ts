@@ -155,8 +155,9 @@ export class Fish extends Component {
             }
             const dur = 1.7;
             this.scheduleOnce(() => {
-                // force：膨胀是一次性动作,不 force 的话眩晕循环会被 oneShot 闸掉
-                if (this.alive && this._animator && this._animator.has('stun')) this._animator.play('stun', true, 1, true);
+                // 用户拍板：撞晕后定格不再摇摆（晕 clip 的摇晃观感怪）。
+                // 定格在膨胀后的姿态，眩晕星粒子继续转；die/后续 play 会自动恢复
+                if (this.alive && this._animator) this._animator.freeze();
             }, dur);
         } else if (this._animator && this._animator.has('stun')) {
             this._animator.play('stun', true, 1, true);
@@ -198,7 +199,8 @@ export class Fish extends Component {
         }
         if (ratio < 0.25 && this.state !== FishState.Stun) {
             this.state = FishState.Stun; // 残血眩晕
-            if (this._animator && this._animator.has('stun')) this._animator.play('stun', true, 1, true);
+            // 已撞桩定格的不再重启动画（保持不摇摆）
+            if (!this._barrierPlayed && this._animator && this._animator.has('stun')) this._animator.play('stun', true, 1, true);
         } else if (this.state === FishState.Blocked) {
             this.state = FishState.Struggle;
         }
@@ -249,8 +251,8 @@ export class Fish extends Component {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const w = new Node('woundEye');
         w.setParent(host);
-        // 眼位经三色标记法标定 (0.15,0.32,0.28)；竞品是眼下嘴角间一道**短**弧（别横跨整头）
-        w.setPosition(0.17, 0.34, 0.34);
+        // 用户拍板：伤口不贴眼睛，往后放在身体中段背部（飞刀/血雾落点仍在眼区）
+        w.setPosition(0.08, 0.5, -0.02);
         w.setRotationFromEuler(0, 25, 0);
         const q = Skin.groundQuad(w, 0.2, 0.07, 'wound_single', new Color(150, 20, 20), 235);
         q.setPosition(0, 0, 0);

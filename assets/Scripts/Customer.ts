@@ -32,6 +32,7 @@ export class Customer extends Component {
         this.buyLeft = GameConfig.BUY_COUNT;
         this.ensureBubble();
         this.setBubble(this.buyLeft);
+        this.showBubble(false); // 默认收起，成为队首时 flashBubble 亮 2 秒
     }
 
     private ensureBubble() {
@@ -111,10 +112,22 @@ export class Customer extends Component {
         if (this.bubbleNode) this.bubbleNode.active = v;
     }
 
-    /** 吃饱成交：气泡换微笑表情（竞品同款），离场路上一直挂着 */
+    private _hideBubble = () => { if (this.bubbleNode && this.bubbleNode.isValid) this.bubbleNode.active = false; };
+
+    /** 短暂亮一下气泡再收起（用户拍板：图标别常驻，1-2 秒即可） */
+    flashBubble(sec = 2) {
+        this.ensureBubble();
+        if (this.bubbleNode) this.bubbleNode.active = true;
+        this.unschedule(this._hideBubble);
+        this.scheduleOnce(this._hideBubble, sec);
+    }
+
+    /** 吃饱成交：气泡换微笑表情亮 2 秒收起（图标别常驻） */
     showSmile() {
         this.ensureBubble();
         if (this.bubbleNode) this.bubbleNode.active = true;
+        this.unschedule(this._hideBubble);
+        this.scheduleOnce(this._hideBubble, 2);
         const q = this._bubbleQuad;
         if (!q || !q.isValid) return;
         resources.load('texture/ui/bubble_emoji/texture', Texture2D, (err, tex) => {
