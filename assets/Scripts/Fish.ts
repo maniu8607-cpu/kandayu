@@ -155,9 +155,8 @@ export class Fish extends Component {
             }
             const dur = 1.7;
             this.scheduleOnce(() => {
-                // 用户拍板：撞晕后定格不再摇摆（晕 clip 的摇晃观感怪）。
-                // 定格在膨胀后的姿态，眩晕星粒子继续转；die/后续 play 会自动恢复
-                if (this.alive && this._animator) this._animator.freeze();
+                // 美术设计意图：yun 晕 clip 配 Skin02 循环（用户看效果中；嫌摆得凶可降 speed 或换回 freeze）
+                if (this.alive && this._animator && this._animator.has('stun')) this._animator.play('stun', true, 1, true);
             }, dur);
         } else if (this._animator && this._animator.has('stun')) {
             this._animator.play('stun', true, 1, true);
