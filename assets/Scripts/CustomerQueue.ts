@@ -118,6 +118,8 @@ export class CustomerQueue extends Component {
         this._leaving.forEach(c => c.stepToTarget(dt));
         // 队列走位
         this._list.forEach((c, i) => {
+            // 气泡只挂队首一人（竞品样式），全队都顶着图标太乱
+            c.showBubble(i === 0);
             if (c.state === CustomerState.Leave) { c.stepToTarget(dt); return; }
             this.assignTarget(c, i);
             // 新进场的沿南侧车道走到自己槽位的横向位置，再拐进队列——直线走会穿过前面排队的人

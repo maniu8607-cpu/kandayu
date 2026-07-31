@@ -249,10 +249,10 @@ export class Fish extends Component {
         const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
         const w = new Node('woundEye');
         w.setParent(host);
-        // 眼位经三色标记法标定 (0.15,0.32,0.28)；划痕略偏嘴侧、y 抬到头面弧线上露出
-        w.setPosition(0.15, 0.36, 0.30);
-        w.setRotationFromEuler(0, 15, 0);
-        const q = Skin.groundQuad(w, 0.34, 0.07, 'wound_single', new Color(150, 20, 20), 235);
+        // 眼位经三色标记法标定 (0.15,0.32,0.28)；竞品是眼下嘴角间一道**短**弧（别横跨整头）
+        w.setPosition(0.17, 0.34, 0.34);
+        w.setRotationFromEuler(0, 25, 0);
+        const q = Skin.groundQuad(w, 0.2, 0.07, 'wound_single', new Color(150, 20, 20), 235);
         q.setPosition(0, 0, 0);
     }
 
