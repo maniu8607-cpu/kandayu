@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget } from 'cc';
+import { _decorator, Component, Node, Vec3, Prefab, instantiate, Camera, tween, Label, ParticleSystem, director, Color, Widget, Material, MeshRenderer } from 'cc';
 import { GameConfig } from './GameConfig';
 import { PlayerController } from './PlayerController';
 import { Backpack, CarryType } from './Backpack';
@@ -163,6 +163,7 @@ export class Game extends Component {
         this.customerQueue?.init();
         this.setupPlates();
         this.initBarrier();
+        this.makeCarryWood();
         this.player?.onFirstDrag(() => {
             if (this.dragTip) this.dragTip.active = false;
             this.gotoStep(0);
@@ -237,6 +238,78 @@ export class Game extends Component {
     private initBarrier() {
         const segs = this.barrierSegments();
         segs.forEach(s => { s.active = false; });
+        this.makeBarrierGhost();
+    }
+
+    private _barrierGhost: Node | null = null;
+    private _carryWood: Node | null = null;
+
+    /** 开局主角背上背一摞木头（竞品同款），交付木桩时飞出去 */
+    private makeCarryWood() {
+        if (!this.woodPrefab || !this.playerNode || this._carryWood) return;
+        const holder = new Node('CarryWood');
+        holder.setParent(this.playerNode);
+        holder.setPosition(0, 1.3, -0.3);
+        // 木头 prefab 原生是竖杆朝向且 FBX 材质发黑——放平交错叠 + 统一刷木色
+        const woodMat = new Material();
+        woodMat.initialize({ effectName: 'builtin-unlit' });
+        woodMat.setProperty('mainColor', new Color(176, 122, 66, 255));
+        for (let i = 0; i < 5; i++) {
+            const w = instantiate(this.woodPrefab);
+            w.setParent(holder);
+            w.setPosition(0, i * 0.09, 0);
+            w.setRotationFromEuler(90, i % 2 ? 90 : 0, 0);
+            w.setScale(0.5, 0.5, 0.5);
+            w.getComponentsInChildren(MeshRenderer).forEach(r => {
+                for (let k = 0; k < r.sharedMaterials.length; k++) r.setSharedMaterial(woodMat, k);
+            });
+        }
+        this._carryWood = holder;
+    }
+
+    /** 交付木桩：背上的木头逐根抛向木桩位置（0.05s/根，竞品连投节奏） */
+    private throwCarryWood() {
+        const holder = this._carryWood;
+        this._carryWood = null;
+        if (!holder || !holder.isValid) return;
+        const tgt = (this.barrierNode ?? this.woodPiles)?.worldPosition;
+        const woods = holder.children.slice();
+        woods.forEach((w, i) => {
+            this.scheduleOnce(() => {
+                if (!w.isValid) return;
+                const wp = w.worldPosition.clone();
+                w.setParent(this.flyLayer);
+                w.setWorldPosition(wp);
+                if (tgt) {
+                    const local = new Vec3();
+                    this.flyLayer.inverseTransformPoint(local, tgt);
+                    FlyUtil.jumpTo(w, 0.16, local, GameConfig.px(120), () => { if (w.isValid) w.destroy(); });
+                } else w.destroy();
+            }, 0.05 * i);
+        });
+        this.scheduleOnce(() => { if (holder.isValid) holder.destroy(); }, 0.05 * woods.length + 0.05);
+    }
+
+    /** 木桩虚影：开局在木桩位置显示白色半透明轮廓（竞品式建造预览），真桩显现时销毁 */
+    private makeBarrierGhost() {
+        const base = this.barrierNode ?? this.woodPiles;
+        if (!base || this._barrierGhost || !this.flyLayer) return;
+        const ghost = instantiate(base);
+        ghost.name = 'BarrierGhost';
+        // 原容器（拦鱼木桩组）在编辑器里是隐藏的，虚影要挂到常显层并复刻世界变换
+        ghost.setParent(this.flyLayer);
+        ghost.setWorldPosition(base.worldPosition);
+        ghost.setWorldRotation(base.worldRotation);
+        ghost.setWorldScale(base.worldScale);
+        ghost.active = true;
+        ghost.walk(n => { n.active = true; });
+        const mat = new Material();
+        mat.initialize({ effectName: 'builtin-unlit', technique: 1 });
+        mat.setProperty('mainColor', new Color(255, 255, 255, 165)); // 96 在亮背景上几乎看不见，165 才有「白色虚影」感
+        ghost.getComponentsInChildren(MeshRenderer).forEach(r => {
+            for (let i = 0; i < r.sharedMaterials.length; i++) r.setSharedMaterial(mat, i);
+        });
+        this._barrierGhost = ghost;
     }
 
     private barrierSegments(): Node[] {
@@ -250,6 +323,7 @@ export class Game extends Component {
         // 只点亮段节点没用，先把引用节点往上的祖先链全部打开（段本身留给下面逐段弹出）
         const base = this.barrierNode ?? this.woodPiles;
         for (let n = base?.parent; n && n.parent; n = n.parent) n.active = true;
+        if (this._barrierGhost && this._barrierGhost.isValid) { this._barrierGhost.destroy(); this._barrierGhost = null; }
         const segs = this.barrierSegments();
         if (!segs.length) { onDone && onDone(); return; }
         const step = segs.length > 1 ? this.barrierRevealTime / segs.length : 0;
@@ -353,8 +427,8 @@ export class Game extends Component {
         this._chopTimer += dt;
         if (this._chopTimer < GameConfig.ATTACK_INTERVAL) return;
         this._chopTimer = 0;
-        // TODO 挥刀动画：模型动画接入后在此播放
-        const dead = fish.hit(GameConfig.HIT_DAMAGE);
+        // 伤口落在主角砍击的一侧（砍哪伤哪）
+        const dead = fish.hit(GameConfig.HIT_DAMAGE, false, this.player.node.worldPosition);
         AudioMgr.play('chop', 1, 120);
         this.playChopSwing(fish.node.worldPosition);
         // 血特效打在鱼身上表面（朝主角一侧），比打在几何中心更看得见
@@ -476,12 +550,13 @@ export class Game extends Component {
         const bag = this.player.backpack;
         switch (p.plateId) {
             case 'wood': {
-                // 站上即显现地编里已有的木桩（不再扔木头）
+                // 站上即交付：背上的木头飞向木桩位，随后木桩显现
                 if (this._barrierDone) return;
                 this._barrierDone = true;
                 this._deliverBusy = true;
                 p.done = true;
                 p.hide();
+                this.throwCarryWood();
                 this.revealBarrier(() => {
                     this._deliverBusy = false;
                     this.onWoodDone();
@@ -745,8 +820,10 @@ export class Game extends Component {
                 .to(0.16, { position: new Vec3(bx, this._cutterBaseY, bz) })
                 .start();
         }
-        // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊，视觉冲击的核心
-        const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true);
+        // sustainRed：竞品切割机切的鱼整条持续染红+身下血泊+三道伤口+每刀血雾，视觉冲击的核心
+        const dead = fish.hit(GameConfig.CUTTER_DAMAGE, true, this._cutterNode?.worldPosition);
+        const cfp = fish.node.worldPosition;
+        this.spawnFx(this.hitFx, new Vec3(cfp.x, cfp.y + 1.4, cfp.z), 0.9);
         this.dropMeat(GameConfig.CUTTER_MEAT, fish.node.worldPosition);
         if (dead) fish.playDie(() => this.fishLane.removeFish(fish.node));
     }

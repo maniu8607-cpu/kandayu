@@ -131,9 +131,9 @@ export class Fish extends Component {
 
     get alive() { return this.state !== FishState.Dead; }
 
-    /** 撞上木桩：膨胀一次 → 转眩晕循环（竞品同款两拍） */
-    playHitBarrier() {
-        if (this._barrierPlayed) return;
+    /** 撞上木桩：膨胀一次 → 转眩晕循环（竞品同款两拍）。返回 true=本次真的播了（供木桩晃动等联动） */
+    playHitBarrier(): boolean {
+        if (this._barrierPlayed) return false;
         this._barrierPlayed = true;
         AudioMgr.play('hit_wall', 1, 300);
         // 撞桩瞬间：睁眼正常版 → X 眼晕版（美术给的是两个状态模型）
@@ -152,6 +152,7 @@ export class Fish extends Component {
         } else if (this._animator && this._animator.has('stun')) {
             this._animator.play('stun', true, 1, true);
         }
+        return true;
     }
     private _barrierPlayed = false;
 
@@ -171,13 +172,15 @@ export class Fish extends Component {
         this._bloodPool = n;
     }
 
-    /** 受击一刀。返回 true 表示这刀砍死了。sustainRed=切割机砍：鱼持续染红不恢复+血泊 */
-    hit(damage: number, sustainRed = false): boolean {
+    /** 受击一刀。返回 true 表示这刀砍死了。sustainRed=切割机砍：鱼持续染红不恢复+血泊。
+     *  fromWorld=砍击来源（主角/切割机位置），伤口落在被砍一侧；切割机三刀片一次铺三道伤口 */
+    hit(damage: number, sustainRed = false, fromWorld?: Vec3): boolean {
         if (!this.alive) return false;
         if (sustainRed) { this._sustainRed = true; this.ensureBloodPool(); }
         this.hp -= damage;
         this.updateBloodBar();
         this.playHitFeedback();
+        this.spawnWound(fromWorld, sustainRed ? 3 : 1);
         const ratio = this.hp / GameConfig.FISH_HP;
         if (this.hp <= 0) {
             this.state = FishState.Dead;
@@ -198,7 +201,6 @@ export class Fish extends Component {
             // 已在撞桩眩晕状态就保持眩晕，不被受击膨胀打断
             if (!this._barrierPlayed) this._animator.play('action', false);
             this.flashRed();
-            this.spawnWound();
             return;
         }
         if (!this.modelNode) return;
@@ -215,18 +217,25 @@ export class Fish extends Component {
     @property({ tooltip: '最多显示几处伤口' }) maxWounds = 3;
     private _wounds = 0;
 
-    /** 每砍到一定血量在鱼身留一处伤痕（贴 wound.png，缺图用暗红块） */
-    private spawnWound() {
-        const step = GameConfig.FISH_HP / (this.maxWounds + 1);
-        const want = Math.min(this.maxWounds, Math.floor((GameConfig.FISH_HP - this.hp) / step));
-        while (this._wounds < want) {
+    /** 每刀在鱼身留一处伤痕（贴 wound.png），最多 maxWounds 处 */
+    private spawnWound(fromWorld?: Vec3, count = 1) {
+        // 「砍哪伤哪」：有砍击来源时把来源投到鱼局部、钳在身体范围内；切割机三刀片沿身长铺三道。
+        // 注意 host(modelNode) 带 8 倍缩放且鱼体下沉：y 要抬到背脊高度(local 0.5≈世界2.8)，否则埋在水面下
+        const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
+        for (let i = 0; i < count && this._wounds < this.maxWounds; i++) {
             this._wounds++;
-            const host = this._animator && this._animator.modelNode ? this._animator.modelNode : this.node;
             const w = new Node('wound' + this._wounds);
             w.setParent(host);
-            // 沿鱼身随机撒在上表面。注意 host(modelNode) 带 8 倍缩放且鱼体下沉：
-            // local y=0.16 时世界 y≈0.06 贴在水面，被鱼身整个盖住——要抬到背脊高度
-            w.setPosition((Math.random() - 0.5) * 0.5, 0.5, (Math.random() - 0.5) * 0.18);
+            let lx = (Math.random() - 0.5) * 0.5;
+            let lz = (Math.random() - 0.5) * 0.18;
+            if (fromWorld) {
+                const lp = new Vec3();
+                host.inverseTransformPoint(lp, fromWorld);
+                lx = Math.max(-0.4, Math.min(0.4, lp.x)) + (Math.random() - 0.5) * 0.08;
+                lz = Math.max(-0.15, Math.min(0.15, lp.z));
+            }
+            if (count > 1) lx = -0.3 + 0.3 * ((this._wounds - 1) % 3); // 三刀片沿身长均布
+            w.setPosition(lx, 0.5, lz);
             w.setRotationFromEuler(0, Math.random() * 360, 0);
             // 尺寸配 AI 伤痕图的 2.7:1 横构图（两道斜爪痕），别改回方形——会把爪痕竖向拉陡
             const q = Skin.groundQuad(w, 0.24, 0.09, 'wound', new Color(150, 20, 20), 235);

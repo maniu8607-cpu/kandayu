@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Vec2, input, Input, EventTouch, Color } from 'cc';
+import { _decorator, Component, Node, Vec3, Vec2, input, Input, EventTouch, Color, MeshRenderer, Material, utils, primitives } from 'cc';
 import { GameConfig } from './GameConfig';
 import { Backpack } from './Backpack';
 import { Skin } from './Skin';
@@ -146,7 +146,40 @@ export class PlayerController extends Component {
 
     private _bobTime = 0;
 
+    private _knife: Node | null = null;
+
+    /** 手持菜刀（竞品渔夫持刀挥砍）：挂在右手骨上随动作走。模型包没有刀网格，程序拼一把 */
+    private ensureKnife() {
+        if (this._knife && this._knife.isValid) return;
+        if (!this._animator || !this._animator.modelNode) return;
+        let hand: Node | null = null;
+        this._animator.modelNode.walk(n => { if (!hand && n.name === 'Bip001 R Hand') hand = n; });
+        if (!hand) return;
+        const knife = new Node('Knife');
+        knife.setParent(hand);
+        knife.setPosition(0.1, 0, 0);
+        // 俯视相机下竖直刀面是一条细缝，倾一点让刀面吃到视角
+        knife.setRotationFromEuler(35, 0, 0);
+        const mkBox = (name: string, w: number, h: number, l: number, c: Color, px: number, py: number) => {
+            // quad_ 前缀：Skin.apply 换皮是异步的，回调时会把整树 MeshRenderer 套上角色图集，
+            // 只有 quad_ 开头的节点会被跳过（第16轮脚下光环同款坑）
+            const n = new Node('quad_' + name);
+            n.setParent(knife);
+            n.setPosition(px, py, 0);
+            const mr = n.addComponent(MeshRenderer);
+            mr.mesh = utils.MeshUtils.createMesh(primitives.box({ width: w, height: h, length: l }));
+            const m = new Material();
+            m.initialize({ effectName: 'builtin-unlit' });
+            m.setProperty('mainColor', c);
+            mr.setSharedMaterial(m, 0);
+        };
+        mkBox('blade', 0.42, 0.28, 0.05, new Color(216, 224, 232, 255), 0.26, -0.08);
+        mkBox('handle', 0.2, 0.06, 0.06, new Color(122, 82, 42, 255), 0, 0.03);
+        this._knife = knife;
+    }
+
     update(dt: number) {
+        this.ensureKnife();
         // 骨骼动画接管时切 run/idle,否则退回程序化颠步
         if (this._animator) {
             this._animator.play(this.isMoving ? 'run' : 'idle', true);

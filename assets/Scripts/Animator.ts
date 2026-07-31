@@ -70,6 +70,10 @@ export class Animator extends Component {
         this.modelNode = wrap;
 
         this._anim = m.getComponent(SkeletalAnimation) ?? m.addComponent(SkeletalAnimation);
+        // ⚠️ 必须先关烘焙、后赋 clips：赋 clips 时按当时模式创建动画状态，默认烘焙模式下
+        // 创建的状态把采样写进烘焙通道，而蒙皮走实时节点——time 在走、骨骼纹丝不动，
+        // 全部动画静默空转（角色僵一个姿势）。顺序错了就是这个全局症状。
+        this._anim.useBakedAnimation = false;
         const clips: AnimationClip[] = [];
         const reg = (key: string, c: AnimationClip | null) => {
             if (!c) return;
@@ -89,9 +93,6 @@ export class Animator extends Component {
         reg('stun', this.clipStun);
         if (!clips.length) { console.warn('[Animator] 没有任何 clip', this.node.name); return true; }
         this._anim.clips = clips;
-        // 必须关烘焙：烘焙模式把关节矩阵烤进贴图，节点 scale/rotation 会被完全忽略，
-        // 表现为「模型怎么缩放都不变大小」。关掉后走实时计算，缩放/朝向才生效。
-        this._anim.useBakedAnimation = false;
         // 只套模型包装层，不套挂在角色根上的面片（脚下光环等）
         if (this.skinTex) Skin.apply(this.modelNode, this.skinTex);
         this.play('idle', true);
@@ -145,11 +146,11 @@ export class Animator extends Component {
         m.setPosition(0, 0, 0);
         m.setRotationFromEuler(this.modelPitch, 0, this.modelRoll);
         this._anim = m.getComponent(SkeletalAnimation) ?? m.addComponent(SkeletalAnimation);
+        this._anim.useBakedAnimation = false; // 同 build()：先关烘焙再赋 clips，顺序反了动画空转
         const clips: AnimationClip[] = [];
         [this.clipIdle, this.clipRun, this.clipAction, this.clipDie, this.clipStun]
             .forEach(c => { if (c && clips.indexOf(c) < 0) clips.push(c); });
         this._anim.clips = clips;
-        this._anim.useBakedAnimation = false;
         if (this.skinTex) Skin.apply(wrap, this.skinTex);
         this._cur = '';
         this._oneShot = false;

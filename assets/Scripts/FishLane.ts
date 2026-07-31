@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Vec3, Prefab, instantiate, tween } from 'cc';
 import { GameConfig } from './GameConfig';
 import { Fish, FishState } from './Fish';
 import { Skin } from './Skin';
@@ -199,7 +199,7 @@ export class FishLane extends Component {
                     if (f.state === FishState.Swim) f.state = FishState.Blocked;
                     // 顶在木桩上的队首演「撞桩→膨胀→眩晕」；防重入在 Fish 内部，
                     // 前任被砍死后补位上来的新队首也会演
-                    if (queueIndex === 0) f.playHitBarrier();
+                    if (queueIndex === 0 && f.playHitBarrier()) this.shakeBarrier();
                 } else {
                     toTarget.normalize();
                     pos.add(new Vec3(toTarget.x * move, 0, toTarget.z * move));
@@ -245,5 +245,20 @@ export class FishLane extends Component {
         const i = this._fishes.indexOf(n);
         if (i >= 0) this._fishes.splice(i, 1);
         n.destroy();
+    }
+
+    /** 鱼撞上木桩瞬间：木桩晃两下（撞击反馈，配合鱼膨胀+眩晕+音效） */
+    private shakeBarrier() {
+        const b = this.barrierNode;
+        if (!b || !b.activeInHierarchy) return;
+        const segs = b.children.length ? b.children : [b];
+        segs.forEach(s => {
+            const base = s.scale.clone();
+            tween(s)
+                .to(0.06, { scale: new Vec3(base.x * 1.08, base.y * 0.92, base.z * 1.08) })
+                .to(0.09, { scale: new Vec3(base.x * 0.96, base.y * 1.05, base.z * 0.96) })
+                .to(0.08, { scale: base })
+                .start();
+        });
     }
 }
